@@ -7,7 +7,7 @@
 **/scalastyle-output.xml
 docs/**
 **/dependency-reduced-pom.xml
-**/arctic_krb_conf/**
+**/amoro_krb_conf/**
 **/metastore_db/**
 **/gen-antlr/**
 **/unit_test_base_tmp/**
@@ -16,5 +16,5 @@ docs/**
 
 **/node_modules/**
 **/pnpm-lock.yaml
-**/src/main/resources/static/**
+**/ams-dashboard/dist/**
 **/components.d.ts

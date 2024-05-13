@@ -27,7 +27,7 @@ for more information.
 To use Amoro in a Spark shell, use the --packages option:
 
 ```bash
-spark-shell --packages com.netease.amoro:amoro-mixed-spark-3.3-runtime:0.5.0
+spark-shell --packages org.apache.amoro:amoro-mixed-spark-3.3-runtime:0.7.0
 ```
 
 > If you want to include the connector in your Spark installation, add the `amoro-mixed-spark-3.3-runtime` Jar to
@@ -37,8 +37,8 @@ spark-shell --packages com.netease.amoro:amoro-mixed-spark-3.3-runtime:0.5.0
 
 ```
 ${SPARK_HOME}/bin/spark-sql \
-    --conf spark.sql.extensions=com.netease.arctic.spark.ArcticSparkExtensions \
-    --conf spark.sql.catalog.local_catalog=com.netease.arctic.spark.ArcticSparkCatalog \
+    --conf spark.sql.extensions=org.apache.amoro.spark.ArcticSparkExtensions \
+    --conf spark.sql.catalog.local_catalog=org.apache.amoro.spark.ArcticSparkCatalog \
     --conf spark.sql.catalog.local_catalog.url=thrift://${AMS_HOST}:${AMS_PORT}/${AMS_CATALOG_NAME}
 ```
 
