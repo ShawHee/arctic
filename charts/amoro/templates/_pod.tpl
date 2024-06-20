@@ -24,16 +24,29 @@
       mountPath: /opt/flink_install
 {{- end -}}
 
+{{- define "amoro.pod.initContainer.spark" -}}
+- name: install-spark
+  image: {{ include "amoro.optimizer.container.spark.image" .}}
+  command: ["cp", "/opt/spark/.", "/opt/spark_install/", "-R"]
+  volumeMounts:
+    - name: spark-install
+      mountPath: /opt/spark_install
+{{- end -}}
+
 
 {{- define "amoro.pod.initContainers" -}}
 {{- if .Values.optimizer.flink.enabled -}}
-{{- include "amoro.pod.initContainer.flink" .}}
+{{- include "amoro.pod.initContainer.flink" . }}
+{{/* initialized flink env */}}
+{{- end -}}
+{{- if .Values.optimizer.spark.enabled -}}
+{{- include "amoro.pod.initContainer.spark" . }}
+{{/* initialized spark env */}}
 {{- end -}}
 {{- end }}
 
 
-
-{{- define "amoro.pod.container.mounts" }}
+{{- define "amoro.pod.container.mounts" -}}
 - name: logs
   mountPath: {{ include "amoro.home" . }}/logs
 - name: conf
@@ -53,11 +66,24 @@
   readOnly: true
   subPath: "jvm.properties"
 {{- end -}}
+{{- /* metric-reporters.yaml from config-map*/ -}}
+{{- if or .Values.plugin.metricReporters }}
+- name: conf
+  mountPath: {{ include "amoro.home" . }}/conf/plugins/metric-reporters.yaml
+  readOnly: true
+  subPath: "metric-reporters.yaml"
+{{- end -}}
 {{- /* flink install dir. if flink optimizer container enabled.
 flink distribution package will be installed to here*/ -}}
 {{- if .Values.optimizer.flink.enabled }}
 - name: flink-install
   mountPath: /opt/flink
+{{- end -}}
+{{- /* spark install dir. if spark optimizer container enabled.
+spark distribution package will be installed to here*/ -}}
+{{- if .Values.optimizer.spark.enabled }}
+- name: spark-install
+  mountPath: /opt/spark
 {{- end -}}
 {{- end -}}
 {{- /* define amoro.pod.container.mounts end */ -}}
@@ -73,6 +99,11 @@ flink distribution package will be installed to here*/ -}}
 {{- /* volume for flink distribution package install from init container. */ -}}
 {{- if .Values.optimizer.flink.enabled }}
 - name: flink-install
+  emptyDir: {}
+{{- end -}}
+{{- /* volume for spark distribution package install from init container. */ -}}
+{{- if .Values.optimizer.spark.enabled }}
+- name: spark-install
   emptyDir: {}
 {{- end -}}
 {{- end -}}

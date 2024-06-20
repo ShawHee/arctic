@@ -21,14 +21,21 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.netease.amoro</groupId>
+    <parent>
+        <groupId>org.apache</groupId>
+        <artifactId>apache</artifactId>
+        <version>23</version>
+    </parent>
+
+    <groupId>org.apache.amoro</groupId>
     <artifactId>amoro-parent</artifactId>
-    <version>0.7.0-SNAPSHOT</version>
+    <version>0.7-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Amoro Project Parent</name>
     <description>Amoro is a Lakehouse management system built on open data formats.</description>
-    <url>https://amoro.netease.com</url>
+    <url>https://amoro.apache.org</url>
+    <inceptionYear>2024</inceptionYear>
 
     <licenses>
         <license>
@@ -39,21 +46,21 @@
     </licenses>
 
     <modules>
-        <module>core</module>
-        <module>ams</module>
-        <module>mixed</module>
+        <module>amoro-core</module>
+        <module>amoro-ams</module>
+        <module>amoro-mixed-format</module>
     </modules>
 
     <scm>
-        <connection>scm:git:git@github.com:NetEase/amoro.git</connection>
-        <developerConnection>scm:git:git@github.com:NetEase/amoro.git</developerConnection>
+        <url>scm:git:https://github.com/apache/amoro</url>
+        <connection>scm:git:git@github.com:apache/amoro.git</connection>
+        <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/amoro.git</developerConnection>
         <tag>HEAD</tag>
-        <url>scm:git:git@github.com:NetEase/amoro.git</url>
     </scm>
 
     <issueManagement>
         <system>GitHub Issues</system>
-        <url>https://github.com/NetEase/amoro/issues</url>
+        <url>https://github.com/apache/amoro/issues</url>
     </issueManagement>
 
     <properties>
@@ -83,70 +90,170 @@
         <maven-thrift-plugin.version>0.1.11</maven-thrift-plugin.version>
         <maven-build-helper-plugin.version>3.2.0</maven-build-helper-plugin.version>
         <maven-apache-rat-plugin.version>0.15</maven-apache-rat-plugin.version>
+        <maven-clean-plugin.version>3.3.2</maven-clean-plugin.version>
+        <maven-checkstyle-plugin.version>3.3.1</maven-checkstyle-plugin.version>
 
-        <iceberg.version>1.3.0</iceberg.version>
-        <paimon.version>0.5.0-incubating</paimon.version>
+        <iceberg.version>1.4.3</iceberg.version>
+        <paimon.version>0.8.0</paimon.version>
         <hive.version>3.1.1</hive.version>
-        <hadoop.version>3.2.4</hadoop.version>
+        <hadoop.version>3.4.0</hadoop.version>
         <kerby.version>2.0.3</kerby.version>
         <scala.binary.version>2.12</scala.binary.version>
         <args4j.version>2.33</args4j.version>
         <slf4j.version>1.7.30</slf4j.version>
         <log4j.version>2.20.0</log4j.version>
-        <junit4.version>4.13</junit4.version>
-        <junit5.jupiter.version>5.9.1</junit5.jupiter.version>
-        <junit5.vintage.version>5.9.1</junit5.vintage.version>
-        <junit5.platform.version>1.9.1</junit5.platform.version>
-        <commons-pool2.version>2.10.0</commons-pool2.version>
-        <commons-lang3.version>3.12.0</commons-lang3.version>
+        <junit4.version>4.13.2</junit4.version>
+        <junit5.version>5.9.1</junit5.version>
+        <commons-pool2.version>2.12.0</commons-pool2.version>
+        <commons-lang3.version>3.14.0</commons-lang3.version>
         <cglib.version>2.2.2</cglib.version>
-        <mockito.version>3.12.4</mockito.version>
-        <parquet-hadoop.version>1.12.0</parquet-hadoop.version>
-        <curator.version>5.2.1</curator.version>
-        <zookeeper.version>3.8.3</zookeeper.version>
-        <fastjson.version>1.2.83</fastjson.version>
-        <parquet-avro.version>1.12.2</parquet-avro.version>
-        <orc-core.version>1.7.2</orc-core.version>
-        <awssdk.version>2.20.5</awssdk.version>
+        <curator.version>5.6.0</curator.version>
+        <mockito.version>4.11.0</mockito.version>
+        <parquet-avro.version>1.13.1</parquet-avro.version>
+        <orc-core.version>1.8.3</orc-core.version>
+        <awssdk.version>2.24.12</awssdk.version>
         <terminal.spark.version>3.3.2</terminal.spark.version>
         <terminal.spark.major.version>3.3</terminal.spark.major.version>
         <dropwizard.metrics.version>4.2.19</dropwizard.metrics.version>
-        <thrift.version>0.13.0</thrift.version>
-        <caffeine.version>2.8.4</caffeine.version>
+        <caffeine.version>2.9.3</caffeine.version>
         <snakeyaml.version>2.2</snakeyaml.version>
-        <mybatis.version>3.5.6</mybatis.version>
-        <postgres-jdbc.version>42.5.1</postgres-jdbc.version>
-        <derby-jdbc.version>10.13.1.1</derby-jdbc.version>
+        <mybatis.version>3.5.15</mybatis.version>
+        <postgres-jdbc.version>42.7.2</postgres-jdbc.version>
+        <derby-jdbc.version>10.14.2.0</derby-jdbc.version>
         <commons-dbcp2.version>2.9.0</commons-dbcp2.version>
         <netty.version>4.1.86.Final</netty.version>
-        <javalin.version>4.6.1</javalin.version>
+        <javalin.version>4.6.8</javalin.version>
         <kyuubi-hive-jdbc-shaded.version>1.6.0-incubating</kyuubi-hive-jdbc-shaded.version>
-        <powermock.version>2.0.2</powermock.version>
         <rocksdb.version>7.10.2</rocksdb.version>
-        <kryo.version>2.24.0</kryo.version>
+        <kryo.version>4.0.3</kryo.version>
         <trino.version>406</trino.version>
         <lucene.version>8.11.2</lucene.version>
-        <bitmap.version>0.9.44</bitmap.version>
+        <bitmap.version>1.0.1</bitmap.version>
+        <prometheus.version>0.16.0</prometheus.version>
+        <flink.version>1.18.1</flink.version>
+        <fabric8-kubernetes-client.version.version>6.12.1</fabric8-kubernetes-client.version.version>
+        <amoro-shade.version>0.7-SNAPSHOT</amoro-shade.version>
+        <amoro-shade-guava.version>32.1.1-jre</amoro-shade-guava.version>
+        <amoro-shade-jackson.version>2.14.2</amoro-shade-jackson.version>
+        <amoro-shade-zookeeper.version>3.9.1</amoro-shade-zookeeper.version>
+        <amoro-shade-thrift.version>0.20.0</amoro-shade-thrift.version>
+        <annotation-api.version>1.3.2</annotation-api.version>
     </properties>
+
+    <dependencies>
+        <!-- Root dependencies for all projects -->
+        <!-- Logging API -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <!-- test dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+        </dependency>
+
+        <!-- tests will have log4j as the default logging framework available -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <!-- API bridge between log4j 1 and 2 -->
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-1.2-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.netease.amoro</groupId>
+                <groupId>org.apache.amoro</groupId>
                 <artifactId>amoro-ams-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>com.netease.amoro</groupId>
+                <groupId>org.apache.amoro</groupId>
                 <artifactId>amoro-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>com.netease.amoro</groupId>
-                <artifactId>amoro-mixed-hive</artifactId>
+                <groupId>org.apache.amoro</groupId>
+                <artifactId>amoro-mixed-format-hive</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.amoro</groupId>
+                <artifactId>amoro-shade-jackson-2</artifactId>
+                <version>${amoro-shade-jackson.version}-${amoro-shade.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.amoro</groupId>
+                <artifactId>amoro-shade-guava-32</artifactId>
+                <version>${amoro-shade-guava.version}-${amoro-shade.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.amoro</groupId>
+                <artifactId>amoro-shade-zookeeper-3</artifactId>
+                <version>${amoro-shade-zookeeper.version}-${amoro-shade.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.amoro</groupId>
+                <artifactId>amoro-shade-thrift</artifactId>
+                <version>${amoro-shade-thrift.version}-${amoro-shade.version}</version>
             </dependency>
 
             <dependency>
@@ -205,12 +312,6 @@
 
             <dependency>
                 <groupId>org.apache.iceberg</groupId>
-                <artifactId>iceberg-bundled-guava</artifactId>
-                <version>${iceberg.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.iceberg</groupId>
                 <artifactId>iceberg-aws</artifactId>
                 <version>${iceberg.version}</version>
             </dependency>
@@ -219,18 +320,6 @@
                 <groupId>org.apache.parquet</groupId>
                 <artifactId>parquet-avro</artifactId>
                 <version>${parquet-avro.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.parquet</groupId>
-                        <artifactId>parquet-hadoop</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.parquet</groupId>
-                <artifactId>parquet-hadoop</artifactId>
-                <version>${parquet-hadoop.version}</version>
             </dependency>
 
             <dependency>
@@ -249,10 +338,6 @@
                     <exclusion>
                         <groupId>org.apache.kerby</groupId>
                         <artifactId>kerb-simplekdc</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.zookeeper</groupId>
-                        <artifactId>*</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -292,7 +377,7 @@
                     </exclusion>
                     <exclusion>
                         <groupId>com.sun.jersey</groupId>
-                        <artifactId>jersey-servlet</artifactId>
+                        <artifactId>*</artifactId>
                     </exclusion>
                     <exclusion>
                         <groupId>log4j</groupId>
@@ -386,6 +471,18 @@
             </dependency>
 
             <dependency>
+                <groupId>io.prometheus</groupId>
+                <artifactId>simpleclient</artifactId>
+                <version>${prometheus.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.prometheus</groupId>
+                <artifactId>simpleclient_httpserver</artifactId>
+                <version>${prometheus.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>software.amazon.awssdk</groupId>
                 <artifactId>dynamodb</artifactId>
                 <version>${awssdk.version}</version>
@@ -422,45 +519,9 @@
             </dependency>
 
             <dependency>
-                <groupId>org.apache.thrift</groupId>
-                <artifactId>libthrift</artifactId>
-                <version>${thrift.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-api</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <dependency>
                 <groupId>com.github.ben-manes.caffeine</groupId>
                 <artifactId>caffeine</artifactId>
                 <version>${caffeine.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.curator</groupId>
-                <artifactId>curator-framework</artifactId>
-                <version>${curator.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-api</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.curator</groupId>
-                <artifactId>curator-recipes</artifactId>
-                <version>${curator.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>fastjson</artifactId>
-                <version>${fastjson.version}</version>
             </dependency>
 
             <dependency>
@@ -530,7 +591,7 @@
             </dependency>
 
             <dependency>
-                <groupId>com.esotericsoftware.kryo</groupId>
+                <groupId>com.esotericsoftware</groupId>
                 <artifactId>kryo</artifactId>
                 <version>${kryo.version}</version>
             </dependency>
@@ -618,10 +679,10 @@
                     </exclusion>
                     <exclusion>
                         <groupId>org.apache.hbase</groupId>
-                        <artifactId>hbase-hadoop2-compat</artifactId>
+                        <artifactId>*</artifactId>
                     </exclusion>
                     <exclusion>
-                        <groupId>org.apache.zookeeper</groupId>
+                        <groupId>co.cask.tephra</groupId>
                         <artifactId>*</artifactId>
                     </exclusion>
                 </exclusions>
@@ -695,6 +756,31 @@
                 <version>${lucene.version}</version>
             </dependency>
 
+            <!-- flink dependencies -->
+            <dependency>
+                <groupId>org.apache.flink</groupId>
+                <artifactId>flink-clients</artifactId>
+                <version>${flink.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.flink</groupId>
+                <artifactId>flink-runtime-web</artifactId>
+                <version>${flink.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.fabric8</groupId>
+                <artifactId>kubernetes-client</artifactId>
+                <version>${fabric8-kubernetes-client.version.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.annotation</groupId>
+                <artifactId>javax.annotation-api</artifactId>
+                <version>${annotation-api.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
@@ -703,45 +789,11 @@
             </dependency>
 
             <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-api</artifactId>
-                <version>${junit5.jupiter.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter</artifactId>
-                <version>${junit5.jupiter.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-engine</artifactId>
-                <version>${junit5.jupiter.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.junit.vintage</groupId>
-                <artifactId>junit-vintage-engine</artifactId>
-                <version>${junit5.vintage.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.junit.platform</groupId>
-                <artifactId>junit-platform-launcher</artifactId>
-                <version>${junit5.platform.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.junit.platform</groupId>
-                <artifactId>junit-platform-suite-engine</artifactId>
-                <version>${junit5.platform.version}</version>
-                <scope>test</scope>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit5.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
 
             <dependency>
@@ -752,9 +804,9 @@
             </dependency>
 
             <dependency>
-                <groupId>org.powermock</groupId>
-                <artifactId>powermock-api-mockito2</artifactId>
-                <version>${powermock.version}</version>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-junit-jupiter</artifactId>
+                <version>${mockito.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
@@ -783,6 +835,30 @@
             <id>gcs-maven-central-mirror</id>
             <name>GCS Maven Central mirror Asia Pacific</name>
             <url>https://maven-central-asia.storage-download.googleapis.com/maven2/</url>
+        </repository>
+
+        <repository>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>apache-releases</id>
+            <name>apache releases</name>
+            <url>https://repository.apache.org/content/repositories/releases/</url>
+        </repository>
+
+        <repository>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <id>apache-snapshots</id>
+            <name>apache snapshots</name>
+            <url>https://repository.apache.org/content/repositories/snapshots/</url>
         </repository>
     </repositories>
 
@@ -846,11 +922,6 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-shade-plugin</artifactId>
-                    <version>${maven-shade-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -930,16 +1001,16 @@
                                 <order>,javax,java,\\#</order>
                             </importOrder>
                             <licenseHeader>
-                                <file>copyright.txt</file>
+                                <file>tools/maven/copyright.txt</file>
                             </licenseHeader>
                         </java>
                         <scala>
                             <scalafmt>
                                 <scalaMajorVersion>2.12</scalaMajorVersion>
-                                <file>.scalafmt.conf</file>
+                                <file>tools/maven/scalafmt.conf</file>
                             </scalafmt>
                             <licenseHeader>
-                                <file>copyright.txt</file>
+                                <file>tools/maven/copyright.txt</file>
                             </licenseHeader>
                         </scala>
                     </configuration>
@@ -958,7 +1029,7 @@
                                 <familyName>Apache License 2.0</familyName>
                             </licenseFamily>
                         </licenseFamilies>
-                        <excludesFile>.rat-excludes</excludesFile>
+                        <excludesFile>tools/maven/rat-excludes</excludesFile>
                     </configuration>
                     <executions>
                         <execution>
@@ -968,6 +1039,86 @@
                             <phase>verify</phase>
                         </execution>
                     </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>${maven-checkstyle-plugin.version}</version>
+                    <configuration>
+                        <configLocation>/tools/maven/checkstyle.xml</configLocation>
+                        <suppressionsLocation>/tools/maven/suppressions.xml</suppressionsLocation>
+                        <consoleOutput>true</consoleOutput>
+                        <failsOnError>true</failsOnError>
+                        <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>validate</id>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>${maven-clean-plugin.version}</version>
+                    <configuration>
+                        <filesets>
+                            <fileset>
+                                <directory>${project.basedir}</directory>
+                                <includes>
+                                    <include>dependency-reduced-pom.xml</include>
+                                </includes>
+                            </fileset>
+                        </filesets>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>${maven-shade-plugin.version}</version>
+                    <configuration>
+                        <filters combine.children="append">
+                            <filter>
+                                <artifact>*</artifact>
+                                <excludes>
+                                    <exclude>META-INF/maven/**</exclude>
+                                    <exclude>log4j.properties</exclude>
+                                    <exclude>log4j2.properties</exclude>
+                                    <exclude>log4j-test.properties</exclude>
+                                    <exclude>log4j2-test.properties</exclude>
+                                    <!-- Do not copy the signatures in the META-INF folder.
+                            Otherwise, this might cause SecurityExceptions when using the JAR. -->
+                                    <exclude>META-INF/*.SF</exclude>
+                                    <exclude>META-INF/*.DSA</exclude>
+                                    <exclude>META-INF/*.RSA</exclude>
+                                    <exclude>META-INF/services/javax.*</exclude>
+                                    <exclude>**/*.proto</exclude>
+                                    <exclude>hbase-webapps/**</exclude>
+                                    <exclude>org/codehaus/mojo/animal_sniffer/**</exclude>
+                                    <exclude>
+                                        org/apache/hadoop/hive/ql/optimizer/ppr/PartitionExpressionForMetastore**
+                                    </exclude>
+                                    <exclude>
+                                        org/apache/hadoop/hive/ql/security/authorization/AuthorizationPreEventListener**
+                                    </exclude>
+                                </excludes>
+                            </filter>
+                        </filters>
+                        <transformers>
+                            <!-- The service transformer is needed to merge META-INF/services files -->
+                            <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                            <!-- The ApacheNoticeResourceTransformer collects and aggregates NOTICE files -->
+                            <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
+                                <projectName>Apache Amoro (incubating)</projectName>
+                                <inceptionYear>${project.inceptionYear}</inceptionYear>
+                                <encoding>UTF-8</encoding>
+                            </transformer>
+                        </transformers>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -989,86 +1140,51 @@
                 <groupId>org.apache.rat</groupId>
                 <artifactId>apache-rat-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+            </plugin>
         </plugins>
     </build>
 
     <profiles>
+        <!--
+          We're reusing the apache-release build profile defined in the Apache Parent POM,
+          with one exclusion: do not run the source-release-assembly execution goal.
+          We have our own scripts to create the source release, which correctly excludes
+          binaries from distribution tarball.
+          The script can be found under tools/releasing/create_source_release.sh.
+        -->
         <profile>
-            <id>hadoop2</id>
-            <activation>
-                <property>
-                    <name>hadoop</name>
-                    <value>v2</value>
-                </property>
-            </activation>
-            <properties>
-                <guava.version>14.0.1</guava.version>
-                <hive.version>2.1.1</hive.version>
-                <hadoop.version>2.10.2</hadoop.version>
-                <terminal.spark.version>3.1.2</terminal.spark.version>
-                <terminal.spark.major.version>3.1</terminal.spark.major.version>
-            </properties>
-        </profile>
-        <profile>
-            <id>hadoop3</id>
-            <activation>
-                <property>
-                    <name>!hadoop</name>
-                </property>
-            </activation>
-            <properties>
-                <guava.version>32.1.1-jre</guava.version>
-                <hive.version>3.1.1</hive.version>
-                <hadoop.version>3.2.4</hadoop.version>
-                <terminal.spark.version>3.3.2</terminal.spark.version>
-                <terminal.spark.major.version>3.3</terminal.spark.major.version>
-            </properties>
-        </profile>
-        <profile>
-            <id>deploy-maven-central</id>
-            <distributionManagement>
-                <repository>
-                    <id>ossrh</id>
-                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-                </repository>
-                <snapshotRepository>
-                    <id>ossrh</id>
-                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-                </snapshotRepository>
-            </distributionManagement>
+            <id>apache-release</id>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>${maven-source-plugin-version}</version>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.apache.apache.resources</groupId>
+                                <artifactId>apache-source-release-assembly-descriptor</artifactId>
+                                <version>1.0.6</version>
+                            </dependency>
+                        </dependencies>
                         <executions>
                             <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
+                                <id>source-release-assembly</id>
+                                <!-- disable the execution -->
+                                <phase>none</phase>
                             </execution>
                         </executions>
                     </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>${maven-gpg-plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>sign-release-artifacts</id>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                                <phase>verify</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
+
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>${maven-javadoc-plugin.version}</version>
                         <configuration>
                             <quiet>true</quiet>
                             <doclint>none</doclint>
@@ -1084,6 +1200,37 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>hadoop2</id>
+            <activation>
+                <property>
+                    <name>hadoop</name>
+                    <value>v2</value>
+                </property>
+            </activation>
+            <properties>
+                <guava.version>14.0.1</guava.version>
+                <hive.version>2.3.9</hive.version>
+                <hadoop.version>2.10.2</hadoop.version>
+                <terminal.spark.version>3.2.4</terminal.spark.version>
+                <terminal.spark.major.version>3.2</terminal.spark.major.version>
+            </properties>
+        </profile>
+        <profile>
+            <id>hadoop3</id>
+            <activation>
+                <property>
+                    <name>!hadoop</name>
+                </property>
+            </activation>
+            <properties>
+                <guava.version>32.1.1-jre</guava.version>
+                <hive.version>3.1.1</hive.version>
+                <hadoop.version>3.4.0</hadoop.version>
+                <terminal.spark.version>3.3.2</terminal.spark.version>
+                <terminal.spark.major.version>3.3</terminal.spark.major.version>
+            </properties>
         </profile>
     </profiles>
 </project>
