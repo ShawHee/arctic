@@ -193,19 +193,24 @@ public class UnkeyedSparkBatchScan implements Scan, Batch, SupportsReportStatist
 
     @Override
     public boolean next() throws IOException {
-      while (true) {
-        if (currentIterator.hasNext()) {
-          this.current = currentIterator.next();
-          return true;
-        } else if (scanTasks.hasNext()) {
-          this.currentIterator.close();
-          this.currentScanTask = scanTasks.next();
-          this.currentIterator = reader.readData(this.currentScanTask).iterator();
-        } else {
-          this.currentIterator.close();
-          return false;
-        }
-      }
+      return reader
+          .getFileIO()
+          .doAs(
+              () -> {
+                while (true) {
+                  if (currentIterator.hasNext()) {
+                    this.current = currentIterator.next();
+                    return true;
+                  } else if (scanTasks.hasNext()) {
+                    this.currentIterator.close();
+                    this.currentScanTask = scanTasks.next();
+                    this.currentIterator = reader.readData(this.currentScanTask).iterator();
+                  } else {
+                    this.currentIterator.close();
+                    return false;
+                  }
+                }
+              });
     }
 
     @Override

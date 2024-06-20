@@ -216,6 +216,10 @@ public abstract class AbstractUnkeyedDataReader<T> {
     return builder.build();
   }
 
+  public AuthenticatedFileIO getFileIO() {
+    return fileIO;
+  }
+
   protected abstract Function<MessageType, ParquetValueReader<?>> getParquetReaderFunction(
       Schema projectedSchema, Map<Integer, ?> idToConstant);
 

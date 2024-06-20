@@ -278,6 +278,10 @@ public abstract class AbstractKeyedDataReader<T> implements Serializable {
     return builder.build();
   }
 
+  public AuthenticatedFileIO getFileIO() {
+    return fileIO;
+  }
+
   private class GenericMixedDeleteFilter extends MixedDeleteFilter<T> {
 
     protected Function<T, StructLike> asStructLike;
