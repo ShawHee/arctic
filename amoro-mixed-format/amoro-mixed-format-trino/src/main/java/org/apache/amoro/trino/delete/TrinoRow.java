@@ -20,16 +20,16 @@ package org.apache.amoro.trino.delete;
 
 import static io.trino.plugin.iceberg.IcebergPageSink.getIcebergValue;
 import static java.util.Objects.requireNonNull;
-import static org.apache.iceberg.relocated.com.google.common.base.Preconditions.checkArgument;
+import static org.apache.amoro.shade.guava32.com.google.common.base.Preconditions.checkArgument;
 
 import io.trino.spi.Page;
 import io.trino.spi.type.Type;
+import org.apache.amoro.shade.guava32.com.google.common.collect.AbstractIterator;
 import org.apache.iceberg.StructLike;
-import org.apache.iceberg.relocated.com.google.common.collect.AbstractIterator;
 
 import javax.annotation.Nullable;
 
-/** Copy from trino-iceberg TrinoRow and do some change to adapt Arctic */
+/** Copy from trino-iceberg TrinoRow and do some change to adapt mixed-format table */
 public class TrinoRow implements StructLike {
   private final Type[] types;
   private final Page page;

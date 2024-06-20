@@ -25,7 +25,7 @@ import org.apache.amoro.api.ServerTableIdentifier;
 import org.apache.amoro.api.StateField;
 import org.apache.amoro.api.config.OptimizingConfig;
 import org.apache.amoro.api.config.TableConfiguration;
-import org.apache.amoro.server.ArcticServiceConstants;
+import org.apache.amoro.server.AmoroServiceConstants;
 import org.apache.amoro.server.exception.BlockerConflictException;
 import org.apache.amoro.server.exception.ObjectNotExistsException;
 import org.apache.amoro.server.metrics.MetricRegistry;
@@ -40,11 +40,11 @@ import org.apache.amoro.server.persistence.mapper.TableBlockerMapper;
 import org.apache.amoro.server.persistence.mapper.TableMetaMapper;
 import org.apache.amoro.server.table.blocker.TableBlocker;
 import org.apache.amoro.server.utils.IcebergTableUtil;
+import org.apache.amoro.shade.guava32.com.google.common.base.MoreObjects;
+import org.apache.amoro.shade.guava32.com.google.common.base.Preconditions;
 import org.apache.amoro.table.MixedTable;
 import org.apache.amoro.table.blocker.RenewableBlocker;
 import org.apache.iceberg.Snapshot;
-import org.apache.iceberg.relocated.com.google.common.base.MoreObjects;
-import org.apache.iceberg.relocated.com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,16 +72,16 @@ public class TableRuntime extends StatedPersistentBase {
       Collections.synchronizedList(new ArrayList<>());
 
   // for unKeyedTable or base table
-  @StateField private volatile long currentSnapshotId = ArcticServiceConstants.INVALID_SNAPSHOT_ID;
+  @StateField private volatile long currentSnapshotId = AmoroServiceConstants.INVALID_SNAPSHOT_ID;
 
   @StateField
-  private volatile long lastOptimizedSnapshotId = ArcticServiceConstants.INVALID_SNAPSHOT_ID;
+  private volatile long lastOptimizedSnapshotId = AmoroServiceConstants.INVALID_SNAPSHOT_ID;
 
   @StateField
-  private volatile long lastOptimizedChangeSnapshotId = ArcticServiceConstants.INVALID_SNAPSHOT_ID;
+  private volatile long lastOptimizedChangeSnapshotId = AmoroServiceConstants.INVALID_SNAPSHOT_ID;
   // for change table
   @StateField
-  private volatile long currentChangeSnapshotId = ArcticServiceConstants.INVALID_SNAPSHOT_ID;
+  private volatile long currentChangeSnapshotId = AmoroServiceConstants.INVALID_SNAPSHOT_ID;
 
   @StateField private volatile OptimizingStatus optimizingStatus = OptimizingStatus.IDLE;
   @StateField private volatile long currentStatusStartTime = System.currentTimeMillis();
@@ -241,13 +241,18 @@ public class TableRuntime extends StatedPersistentBase {
         });
   }
 
-  public void cleanPendingInput() {
+  /**
+   * When there is no task to be optimized, clean pendingInput and update `lastOptimizedSnapshotId`
+   * to `currentSnapshotId`.
+   */
+  public void completeEmptyProcess() {
     invokeConsistency(
         () -> {
           pendingInput = null;
           if (optimizingStatus == OptimizingStatus.PLANNING
               || optimizingStatus == OptimizingStatus.PENDING) {
             updateOptimizingStatus(OptimizingStatus.IDLE);
+            lastOptimizedSnapshotId = currentSnapshotId;
             persistUpdatingRuntime();
             tableHandler.handleTableChanged(this, optimizingStatus);
           }
@@ -353,7 +358,7 @@ public class TableRuntime extends StatedPersistentBase {
   public void addTaskQuota(TaskRuntime.TaskQuota taskQuota) {
     doAs(OptimizingMapper.class, mapper -> mapper.insertTaskQuota(taskQuota));
     taskQuotas.add(taskQuota);
-    long validTime = System.currentTimeMillis() - ArcticServiceConstants.QUOTA_LOOK_BACK_TIME;
+    long validTime = System.currentTimeMillis() - AmoroServiceConstants.QUOTA_LOOK_BACK_TIME;
     this.taskQuotas.removeIf(task -> task.checkExpired(validTime));
   }
 
@@ -475,7 +480,7 @@ public class TableRuntime extends StatedPersistentBase {
 
   public long getQuotaTime() {
     long calculatingEndTime = System.currentTimeMillis();
-    long calculatingStartTime = calculatingEndTime - ArcticServiceConstants.QUOTA_LOOK_BACK_TIME;
+    long calculatingStartTime = calculatingEndTime - AmoroServiceConstants.QUOTA_LOOK_BACK_TIME;
     taskQuotas.removeIf(task -> task.checkExpired(calculatingStartTime));
     long finishedTaskQuotaTime =
         taskQuotas.stream()
@@ -490,7 +495,7 @@ public class TableRuntime extends StatedPersistentBase {
   public double calculateQuotaOccupy() {
     return new BigDecimal(
             (double) getQuotaTime()
-                / ArcticServiceConstants.QUOTA_LOOK_BACK_TIME
+                / AmoroServiceConstants.QUOTA_LOOK_BACK_TIME
                 / tableConfiguration.getOptimizingConfig().getTargetQuota())
         .setScale(4, RoundingMode.HALF_UP)
         .doubleValue();

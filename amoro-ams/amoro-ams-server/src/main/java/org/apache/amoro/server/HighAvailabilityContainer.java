@@ -21,14 +21,14 @@ package org.apache.amoro.server;
 import org.apache.amoro.api.config.Configurations;
 import org.apache.amoro.client.AmsServerInfo;
 import org.apache.amoro.properties.AmsHAProperties;
+import org.apache.amoro.shade.zookeeper3.org.apache.curator.framework.CuratorFramework;
+import org.apache.amoro.shade.zookeeper3.org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.amoro.shade.zookeeper3.org.apache.curator.framework.recipes.leader.LeaderLatch;
+import org.apache.amoro.shade.zookeeper3.org.apache.curator.framework.recipes.leader.LeaderLatchListener;
+import org.apache.amoro.shade.zookeeper3.org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.amoro.shade.zookeeper3.org.apache.zookeeper.CreateMode;
+import org.apache.amoro.shade.zookeeper3.org.apache.zookeeper.KeeperException;
 import org.apache.amoro.utils.JacksonUtil;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.framework.recipes.leader.LeaderLatch;
-import org.apache.curator.framework.recipes.leader.LeaderLatchListener;
-import org.apache.curator.retry.ExponentialBackoffRetry;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,9 +49,9 @@ public class HighAvailabilityContainer implements LeaderLatchListener {
   private volatile CountDownLatch followerLath;
 
   public HighAvailabilityContainer(Configurations serviceConfig) throws Exception {
-    if (serviceConfig.getBoolean(ArcticManagementConf.HA_ENABLE)) {
-      String zkServerAddress = serviceConfig.getString(ArcticManagementConf.HA_ZOOKEEPER_ADDRESS);
-      String haClusterName = serviceConfig.getString(ArcticManagementConf.HA_CLUSTER_NAME);
+    if (serviceConfig.getBoolean(AmoroManagementConf.HA_ENABLE)) {
+      String zkServerAddress = serviceConfig.getString(AmoroManagementConf.HA_ZOOKEEPER_ADDRESS);
+      String haClusterName = serviceConfig.getString(AmoroManagementConf.HA_CLUSTER_NAME);
       tableServiceMasterPath = AmsHAProperties.getTableServiceMasterPath(haClusterName);
       optimizingServiceMasterPath = AmsHAProperties.getOptimizingServiceMasterPath(haClusterName);
       ExponentialBackoffRetry retryPolicy = new ExponentialBackoffRetry(1000, 3, 5000);
@@ -72,12 +72,12 @@ public class HighAvailabilityContainer implements LeaderLatchListener {
       leaderLatch.start();
       this.tableServiceServerInfo =
           buildServerInfo(
-              serviceConfig.getString(ArcticManagementConf.SERVER_EXPOSE_HOST),
-              serviceConfig.getInteger(ArcticManagementConf.TABLE_SERVICE_THRIFT_BIND_PORT));
+              serviceConfig.getString(AmoroManagementConf.SERVER_EXPOSE_HOST),
+              serviceConfig.getInteger(AmoroManagementConf.TABLE_SERVICE_THRIFT_BIND_PORT));
       this.optimizingServiceServerInfo =
           buildServerInfo(
-              serviceConfig.getString(ArcticManagementConf.SERVER_EXPOSE_HOST),
-              serviceConfig.getInteger(ArcticManagementConf.OPTIMIZING_SERVICE_THRIFT_BIND_PORT));
+              serviceConfig.getString(AmoroManagementConf.SERVER_EXPOSE_HOST),
+              serviceConfig.getInteger(AmoroManagementConf.OPTIMIZING_SERVICE_THRIFT_BIND_PORT));
     } else {
       leaderLatch = null;
       zkClient = null;

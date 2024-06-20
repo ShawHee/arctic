@@ -24,9 +24,6 @@ import router from './router'
 import useStore from './store'
 import VueI18n from './language/i18n'
 
-// TODO： import the global style for v3. Will be removed after migrate to the ant-design-vue-v4
-import 'ant-design-vue-v3/dist/antd.css';
-
 import RegisterComponents from './components/register'
 
 import './styles/index.less'
@@ -53,9 +50,9 @@ RegisterComponents(app);
     const fromQuery = window.location.search
     if (!store.historyPathInfo.path && fromPath!='/login') {
       const queryParams = new URLSearchParams(fromQuery)
-      const queryObj = {}
+      const queryObj: Record<string, string> = {}
       for (const [key, value] of queryParams.entries()) {
-          queryObj[key] = value
+          queryObj[key as string] = value
       }
       store.setHistoryPath({
         path: fromPath,

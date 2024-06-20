@@ -103,18 +103,21 @@ while [ $i -le $j ]; do
     shift 1
     OPTIMIZER_JOB=$1
     i=$((i+2))
+    shift 1
     ;;
 
     "--tag")
     shift 1
     AMORO_TAG=$1
     i=$((i+2))
+    shift 1
     ;;
 
     "--maven-mirror")
     shift 1
     MAVEN_MIRROR=$1
     i=$((i+2))
+    shift 1
     ;;
 
     *)
@@ -200,12 +203,13 @@ function build_amoro() {
   local IMAGE_TAG=$AMORO_TAG
   print_image $IMAGE_REF $IMAGE_TAG
 
-  local DIST_FILE=${PROJECT_HOME}/amoro-ams/dist/target/amoro-${AMORO_VERSION}-bin.zip
+  local DIST_FILE=${PROJECT_HOME}/amoro-ams/dist/target/apache-amoro-${AMORO_VERSION}-bin.tar.gz
 
   if [ ! -f "${DIST_FILE}" ]; then
-    local BUILD_CMD="mvn clean package -am -e -pl ams/dist -DskipTests "
+    local BUILD_CMD="mvn clean package -am -e -pl amoro-ams/dist -DskipTests "
     echo "Amoro dist package is not exists in ${DIST_FILE}"
     echo "please check file or run '$BUILD_CMD' first"
+    exit 1
   fi
 
   set -x

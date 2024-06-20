@@ -21,15 +21,15 @@ package org.apache.amoro.flink.read.hybrid.split;
 import org.apache.amoro.data.DataTreeNode;
 import org.apache.amoro.data.PrimaryKeyedFile;
 import org.apache.amoro.scan.MixedFileScanTask;
+import org.apache.amoro.shade.guava32.com.google.common.base.MoreObjects;
+import org.apache.amoro.shade.guava32.com.google.common.base.Preconditions;
 import org.apache.amoro.utils.FileScanTaskUtil;
-import org.apache.iceberg.relocated.com.google.common.base.MoreObjects;
-import org.apache.iceberg.relocated.com.google.common.base.Preconditions;
 
 import java.util.Collection;
 import java.util.Optional;
 
 /** A changelog split generated during planning change table. */
-public class ChangelogSplit extends ArcticSplit {
+public class ChangelogSplit extends MixedFormatSplit {
   private static final long serialVersionUID = 1L;
   private final int taskIndex;
   private final Collection<MixedFileScanTask> insertScanTasks;
@@ -80,7 +80,7 @@ public class ChangelogSplit extends ArcticSplit {
   }
 
   @Override
-  public ArcticSplit copy() {
+  public MixedFormatSplit copy() {
     return new ChangelogSplit(insertScanTasks, deleteScanTasks, taskIndex);
   }
 
@@ -88,7 +88,7 @@ public class ChangelogSplit extends ArcticSplit {
   public String splitId() {
     return MoreObjects.toStringHelper(this)
         .add("insertTasks", FileScanTaskUtil.toString(insertScanTasks))
-        .add("arcticEquityDeletes", FileScanTaskUtil.toString(deleteScanTasks))
+        .add("mixedFormatEquityDeletes", FileScanTaskUtil.toString(deleteScanTasks))
         .toString();
   }
 
@@ -96,7 +96,7 @@ public class ChangelogSplit extends ArcticSplit {
   public String toString() {
     return MoreObjects.toStringHelper(this)
         .add("insertTasks", FileScanTaskUtil.toString(insertScanTasks))
-        .add("arcticEquityDeletes", FileScanTaskUtil.toString(deleteScanTasks))
+        .add("mixedFormatEquityDeletes", FileScanTaskUtil.toString(deleteScanTasks))
         .add("dataTreeNode", dataTreeNode.toString())
         .toString();
   }

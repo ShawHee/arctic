@@ -84,11 +84,7 @@ limitations under the License.
 </template>
 
 <script lang="ts" setup>
-// TODO: replace to antv-4. After all replacements are completed, switch to automatic import.
-import { Dropdown as ADropdown, Tabs as ATabs, TabPane as ATabPane, Select as ASelect, SelectOption as ASelectOption, Button as AButton, Input as AInput } from 'ant-design-vue'
-
 import { computed, onMounted, reactive, ref } from 'vue'
-import { CheckOutlined, DownOutlined } from '@ant-design/icons-vue'
 import { branchTypeMap, IBranchItem, IServiceBranchItem, operationMap } from '@/types/common.type'
 import { getBranches, getTags } from '@/services/table.service'
 
@@ -127,13 +123,13 @@ const onChange = (val: string) => {
 }
 
 const getBranchList = async () => {
-  const result = await getBranches(props)
+  const result = await getBranches(props as any)
   branchList.value = (result.list || []).map((l: IServiceBranchItem) => ({ value: l.name, label: l.name, type: branchTypeMap.BRANCH }))
   branchList.value.length && selectObject(branchList.value[0])
 }
 
 const getTagList = async () => {
-  const result = await getTags(props)
+  const result = await getTags(props as any)
   tagList.value = (result.list || []).map((l: IServiceBranchItem) => ({ value: l.name, label: l.name, type: branchTypeMap.TAG }))
 }
 

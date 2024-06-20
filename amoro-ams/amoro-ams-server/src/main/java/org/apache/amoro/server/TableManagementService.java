@@ -19,7 +19,7 @@
 package org.apache.amoro.server;
 
 import org.apache.amoro.TableFormat;
-import org.apache.amoro.api.ArcticTableMetastore;
+import org.apache.amoro.api.AmoroTableMetastore;
 import org.apache.amoro.api.BlockableOperation;
 import org.apache.amoro.api.Blocker;
 import org.apache.amoro.api.CatalogMeta;
@@ -32,13 +32,13 @@ import org.apache.amoro.api.TableMeta;
 import org.apache.amoro.server.table.TableMetadata;
 import org.apache.amoro.server.table.TableService;
 import org.apache.amoro.server.utils.InternalTableUtil;
-import org.apache.thrift.TException;
+import org.apache.amoro.shade.thrift.org.apache.thrift.TException;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class TableManagementService implements ArcticTableMetastore.Iface {
+public class TableManagementService implements AmoroTableMetastore.Iface {
 
   private final TableService tableService;
 

@@ -24,7 +24,7 @@ import org.apache.amoro.api.OptimizingTaskId;
 import org.apache.amoro.api.ServerTableIdentifier;
 import org.apache.amoro.api.resource.ResourceGroup;
 import org.apache.amoro.optimizing.RewriteFilesInput;
-import org.apache.amoro.server.ArcticServiceConstants;
+import org.apache.amoro.server.AmoroServiceConstants;
 import org.apache.amoro.server.exception.OptimizingClosedException;
 import org.apache.amoro.server.manager.MetricManager;
 import org.apache.amoro.server.optimizing.plan.OptimizingPlanner;
@@ -37,6 +37,10 @@ import org.apache.amoro.server.resource.QuotaProvider;
 import org.apache.amoro.server.table.TableManager;
 import org.apache.amoro.server.table.TableRuntime;
 import org.apache.amoro.server.table.TableRuntimeMeta;
+import org.apache.amoro.shade.guava32.com.google.common.annotations.VisibleForTesting;
+import org.apache.amoro.shade.guava32.com.google.common.base.Preconditions;
+import org.apache.amoro.shade.guava32.com.google.common.collect.Lists;
+import org.apache.amoro.shade.guava32.com.google.common.collect.Maps;
 import org.apache.amoro.table.MixedTable;
 import org.apache.amoro.utils.CompatiblePropertyUtil;
 import org.apache.amoro.utils.ExceptionUtil;
@@ -44,10 +48,6 @@ import org.apache.amoro.utils.MixedDataFiles;
 import org.apache.amoro.utils.TablePropertyUtil;
 import org.apache.iceberg.PartitionSpec;
 import org.apache.iceberg.StructLike;
-import org.apache.iceberg.relocated.com.google.common.annotations.VisibleForTesting;
-import org.apache.iceberg.relocated.com.google.common.base.Preconditions;
-import org.apache.iceberg.relocated.com.google.common.collect.Lists;
-import org.apache.iceberg.relocated.com.google.common.collect.Maps;
 import org.apache.iceberg.util.StructLikeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,7 +118,7 @@ public class OptimizingQueue extends PersistentBase {
 
     if (tableRuntime.isOptimizingEnabled()) {
       tableRuntime.resetTaskQuotas(
-          System.currentTimeMillis() - ArcticServiceConstants.QUOTA_LOOK_BACK_TIME);
+          System.currentTimeMillis() - AmoroServiceConstants.QUOTA_LOOK_BACK_TIME);
       if (!tableRuntime.getOptimizingStatus().isProcessing()) {
         scheduler.addTable(tableRuntime);
       } else if (tableRuntime.getOptimizingStatus() != OptimizingStatus.COMMITTING) {
@@ -143,7 +143,7 @@ public class OptimizingQueue extends PersistentBase {
           optimizerGroup.getName(),
           tableRuntime.getTableIdentifier());
       tableRuntime.resetTaskQuotas(
-          System.currentTimeMillis() - ArcticServiceConstants.QUOTA_LOOK_BACK_TIME);
+          System.currentTimeMillis() - AmoroServiceConstants.QUOTA_LOOK_BACK_TIME);
       scheduler.addTable(tableRuntime);
     }
   }
@@ -264,7 +264,7 @@ public class OptimizingQueue extends PersistentBase {
       if (planner.isNecessary()) {
         return new TableOptimizingProcess(planner);
       } else {
-        tableRuntime.cleanPendingInput();
+        tableRuntime.completeEmptyProcess();
         return null;
       }
     } catch (Throwable throwable) {
@@ -349,7 +349,7 @@ public class OptimizingQueue extends PersistentBase {
     private final Lock lock = new ReentrantLock();
     private volatile Status status = OptimizingProcess.Status.RUNNING;
     private volatile String failedReason;
-    private long endTime = ArcticServiceConstants.INVALID_TIME;
+    private long endTime = AmoroServiceConstants.INVALID_TIME;
     private Map<String, Long> fromSequence = Maps.newHashMap();
     private Map<String, Long> toSequence = Maps.newHashMap();
     private boolean hasCommitted = false;
@@ -495,7 +495,7 @@ public class OptimizingQueue extends PersistentBase {
     @Override
     public long getDuration() {
       long dur =
-          endTime == ArcticServiceConstants.INVALID_TIME
+          endTime == AmoroServiceConstants.INVALID_TIME
               ? System.currentTimeMillis() - planTime
               : endTime - planTime;
       return Math.max(0, dur);

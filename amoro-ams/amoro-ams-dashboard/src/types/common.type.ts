@@ -70,6 +70,7 @@ export interface IBaseDetailInfo {
 }
 
 export interface DetailColumnItem {
+  checked?: unknown;
   field: string
   type: string
   required: boolean
@@ -206,7 +207,7 @@ export interface ICatalogItem {
   catalogType: string
 }
 export interface IDebugResult {
-  status: number;
+  status: string;
   columns: string[];
   rowData: (string | null)[][];
   id: string
@@ -260,6 +261,8 @@ export interface IIOptimizeGroupItem {
 }
 
 export interface IOptimizeResourceTableItem {
+  touchTime: string;
+  startTime: string;
   index: number
   jobId: number
   jobStatus: string
@@ -308,6 +311,7 @@ export interface IOptimizeGroup {
   container: string
   name: string
   properties: IMap<any>
+  innerPropertiesArray?: any[]
 }
 
 export interface IContainerSetting {

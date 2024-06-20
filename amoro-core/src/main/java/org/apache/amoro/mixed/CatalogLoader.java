@@ -22,19 +22,19 @@ import org.apache.amoro.AmsClient;
 import org.apache.amoro.Constants;
 import org.apache.amoro.PooledAmsClient;
 import org.apache.amoro.TableFormat;
-import org.apache.amoro.api.ArcticTableMetastore;
+import org.apache.amoro.api.AmoroTableMetastore;
 import org.apache.amoro.api.CatalogMeta;
 import org.apache.amoro.api.NoSuchObjectException;
 import org.apache.amoro.client.AmsClientPools;
 import org.apache.amoro.client.AmsThriftUrl;
 import org.apache.amoro.properties.CatalogMetaProperties;
+import org.apache.amoro.shade.guava32.com.google.common.annotations.VisibleForTesting;
+import org.apache.amoro.shade.guava32.com.google.common.base.Preconditions;
+import org.apache.amoro.shade.guava32.com.google.common.collect.Maps;
+import org.apache.amoro.shade.thrift.org.apache.thrift.TException;
 import org.apache.amoro.table.TableMetaStore;
 import org.apache.amoro.utils.MixedCatalogUtil;
 import org.apache.iceberg.common.DynConstructors;
-import org.apache.iceberg.relocated.com.google.common.annotations.VisibleForTesting;
-import org.apache.iceberg.relocated.com.google.common.base.Preconditions;
-import org.apache.iceberg.relocated.com.google.common.collect.Maps;
-import org.apache.thrift.TException;
 
 import java.util.List;
 import java.util.Map;
@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 public class CatalogLoader {
 
   public static final String INTERNAL_CATALOG_IMPL = InternalMixedIcebergCatalog.class.getName();
-  public static final String HIVE_CATALOG_IMPL = "org.apache.amoro.hive.catalog.ArcticHiveCatalog";
+  public static final String HIVE_CATALOG_IMPL = "org.apache.amoro.hive.catalog.MixedHiveCatalog";
   public static final String MIXED_ICEBERG_CATALOG_IMP = BasicMixedIcebergCatalog.class.getName();
 
   /**
@@ -149,7 +149,7 @@ public class CatalogLoader {
    */
   public static List<String> catalogs(String metastoreUrl) {
     try {
-      return ((ArcticTableMetastore.Iface) AmsClientPools.getClientPool(metastoreUrl).iface())
+      return ((AmoroTableMetastore.Iface) AmsClientPools.getClientPool(metastoreUrl).iface())
           .getCatalogs().stream().map(CatalogMeta::getCatalogName).collect(Collectors.toList());
     } catch (TException e) {
       throw new IllegalStateException("failed when load catalogs", e);

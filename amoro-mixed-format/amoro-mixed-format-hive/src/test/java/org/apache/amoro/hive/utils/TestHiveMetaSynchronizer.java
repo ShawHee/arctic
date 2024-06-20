@@ -28,6 +28,7 @@ import org.apache.amoro.hive.catalog.HiveTableTestHelper;
 import org.apache.amoro.hive.io.HiveDataTestHelpers;
 import org.apache.amoro.hive.table.SupportHive;
 import org.apache.amoro.properties.HiveTableProperties;
+import org.apache.amoro.shade.guava32.com.google.common.collect.ImmutableList;
 import org.apache.amoro.table.MixedTable;
 import org.apache.amoro.table.UnkeyedTable;
 import org.apache.amoro.utils.TableFileUtil;
@@ -41,7 +42,6 @@ import org.apache.iceberg.ContentFile;
 import org.apache.iceberg.DataFile;
 import org.apache.iceberg.data.Record;
 import org.apache.iceberg.io.OutputFile;
-import org.apache.iceberg.relocated.com.google.common.collect.ImmutableList;
 import org.apache.iceberg.util.StructLikeMap;
 import org.junit.Assert;
 import org.junit.Assume;
@@ -106,7 +106,7 @@ public class TestHiveMetaSynchronizer extends TableTestBase {
                 });
     Assert.assertNotEquals(newLocation, hiveLocation);
 
-    HiveMetaSynchronizer.syncArcticDataToHive(getMixedTable());
+    HiveMetaSynchronizer.syncMixedTableDataToHive(getMixedTable());
     hiveLocation =
         (getMixedTable())
             .getHMSClient()
@@ -141,7 +141,7 @@ public class TestHiveMetaSynchronizer extends TableTestBase {
                   return hiveTable.getSd().getLocation();
                 });
 
-    HiveMetaSynchronizer.syncArcticDataToHive(getMixedTable());
+    HiveMetaSynchronizer.syncMixedTableDataToHive(getMixedTable());
     String newHiveLocation =
         getMixedTable()
             .getHMSClient()
@@ -189,7 +189,7 @@ public class TestHiveMetaSynchronizer extends TableTestBase {
                             getMixedTable().id().getTableName(),
                             partitionValues)));
 
-    HiveMetaSynchronizer.syncArcticDataToHive(getMixedTable());
+    HiveMetaSynchronizer.syncMixedTableDataToHive(getMixedTable());
     Partition hivePartition =
         getMixedTable()
             .getHMSClient()
@@ -203,7 +203,7 @@ public class TestHiveMetaSynchronizer extends TableTestBase {
   }
 
   @Test
-  public void testSyncOnlyInHiveCreateByArctic() throws Exception {
+  public void testSyncOnlyInHiveCreateByMixedHiveTable() throws Exception {
     Assume.assumeTrue(isPartitionedTable());
     UnkeyedTable baseTable =
         isKeyedTable()
@@ -262,7 +262,7 @@ public class TestHiveMetaSynchronizer extends TableTestBase {
                         partitionValues));
     Assert.assertEquals(partitionLocation, hivePartition.getSd().getLocation());
 
-    HiveMetaSynchronizer.syncArcticDataToHive(getMixedTable());
+    HiveMetaSynchronizer.syncMixedTableDataToHive(getMixedTable());
 
     Assert.assertThrows(
         NoSuchObjectException.class,
@@ -278,7 +278,7 @@ public class TestHiveMetaSynchronizer extends TableTestBase {
   }
 
   @Test
-  public void testSyncOnlyInHiveCreateNotByArctic() throws Exception {
+  public void testSyncOnlyInHiveCreateNotByMixedHiveTable() throws Exception {
     Assume.assumeTrue(isPartitionedTable());
     UnkeyedTable baseTable =
         isKeyedTable()
@@ -336,7 +336,7 @@ public class TestHiveMetaSynchronizer extends TableTestBase {
                         partitionValues));
     Assert.assertEquals(partitionLocation, hivePartition.getSd().getLocation());
 
-    HiveMetaSynchronizer.syncArcticDataToHive(getMixedTable());
+    HiveMetaSynchronizer.syncMixedTableDataToHive(getMixedTable());
 
     hivePartition =
         getMixedTable()
@@ -420,7 +420,7 @@ public class TestHiveMetaSynchronizer extends TableTestBase {
         .commit();
     Assert.assertNotEquals(newPartitionLocation, hivePartition.getSd().getLocation());
 
-    HiveMetaSynchronizer.syncArcticDataToHive(getMixedTable());
+    HiveMetaSynchronizer.syncMixedTableDataToHive(getMixedTable());
 
     hivePartition =
         getMixedTable()

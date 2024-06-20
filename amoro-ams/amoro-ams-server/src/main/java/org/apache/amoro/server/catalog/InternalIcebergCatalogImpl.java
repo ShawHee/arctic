@@ -24,7 +24,7 @@ import org.apache.amoro.api.CatalogMeta;
 import org.apache.amoro.api.config.Configurations;
 import org.apache.amoro.formats.iceberg.IcebergTable;
 import org.apache.amoro.io.AuthenticatedFileIO;
-import org.apache.amoro.server.ArcticManagementConf;
+import org.apache.amoro.server.AmoroManagementConf;
 import org.apache.amoro.server.RestCatalogService;
 import org.apache.amoro.server.exception.ObjectNotExistsException;
 import org.apache.amoro.server.table.TableMetadata;
@@ -33,13 +33,13 @@ import org.apache.amoro.server.table.internal.InternalIcebergHandler;
 import org.apache.amoro.server.table.internal.InternalTableCreator;
 import org.apache.amoro.server.table.internal.InternalTableHandler;
 import org.apache.amoro.server.utils.InternalTableUtil;
+import org.apache.amoro.shade.guava32.com.google.common.base.Preconditions;
 import org.apache.amoro.utils.MixedCatalogUtil;
 import org.apache.iceberg.BaseTable;
 import org.apache.iceberg.CatalogProperties;
 import org.apache.iceberg.TableOperations;
 import org.apache.iceberg.catalog.TableIdentifier;
 import org.apache.iceberg.exceptions.AlreadyExistsException;
-import org.apache.iceberg.relocated.com.google.common.base.Preconditions;
 import org.apache.iceberg.rest.RESTCatalog;
 import org.apache.iceberg.rest.requests.CreateTableRequest;
 
@@ -52,8 +52,8 @@ public class InternalIcebergCatalogImpl extends InternalCatalog {
 
   protected InternalIcebergCatalogImpl(CatalogMeta metadata, Configurations serverConfiguration) {
     super(metadata);
-    this.httpPort = serverConfiguration.getInteger(ArcticManagementConf.HTTP_SERVER_PORT);
-    this.exposedHost = serverConfiguration.getString(ArcticManagementConf.SERVER_EXPOSE_HOST);
+    this.httpPort = serverConfiguration.getInteger(AmoroManagementConf.HTTP_SERVER_PORT);
+    this.exposedHost = serverConfiguration.getString(AmoroManagementConf.SERVER_EXPOSE_HOST);
   }
 
   @Override
@@ -118,7 +118,7 @@ public class InternalIcebergCatalogImpl extends InternalCatalog {
 
     Preconditions.checkArgument(
         format == format(), "the catalog only support to create %s table", format().name());
-    if (exist(database, tableName)) {
+    if (tableExists(database, tableName)) {
       throw new AlreadyExistsException(
           "Table " + name() + "." + database + "." + tableName + " already " + "exists.");
     }

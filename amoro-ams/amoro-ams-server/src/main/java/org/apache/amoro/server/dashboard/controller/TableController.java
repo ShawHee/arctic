@@ -28,7 +28,7 @@ import org.apache.amoro.api.ServerTableIdentifier;
 import org.apache.amoro.api.config.Configurations;
 import org.apache.amoro.hive.CachedHiveClientPool;
 import org.apache.amoro.hive.HMSClientPool;
-import org.apache.amoro.hive.catalog.ArcticHiveCatalog;
+import org.apache.amoro.hive.catalog.MixedHiveCatalog;
 import org.apache.amoro.hive.utils.HiveTableUtil;
 import org.apache.amoro.hive.utils.UpgradeHiveTableUtil;
 import org.apache.amoro.mixed.CatalogLoader;
@@ -59,6 +59,9 @@ import org.apache.amoro.server.dashboard.utils.AmsUtil;
 import org.apache.amoro.server.dashboard.utils.CommonUtil;
 import org.apache.amoro.server.table.TableRuntime;
 import org.apache.amoro.server.table.TableService;
+import org.apache.amoro.shade.guava32.com.google.common.base.Function;
+import org.apache.amoro.shade.guava32.com.google.common.base.Preconditions;
+import org.apache.amoro.shade.guava32.com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.amoro.table.TableIdentifier;
 import org.apache.amoro.table.TableMetaStore;
 import org.apache.amoro.table.TableProperties;
@@ -67,9 +70,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.apache.hadoop.hive.metastore.api.Table;
 import org.apache.iceberg.SnapshotRef;
-import org.apache.iceberg.relocated.com.google.common.base.Function;
-import org.apache.iceberg.relocated.com.google.common.base.Preconditions;
-import org.apache.iceberg.relocated.com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.iceberg.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -179,7 +179,7 @@ public class TableController {
   }
 
   /**
-   * upgrade hive table to arctic.
+   * upgrade a hive table to mixed-hive table.
    *
    * @param ctx - context for handling the request and response
    */
@@ -211,8 +211,8 @@ public class TableController {
     Map<String, String> catalogProperties = new HashMap<>(originCatalogProperties);
     catalogProperties.put(CatalogMetaProperties.TABLE_FORMATS, TableFormat.MIXED_HIVE.name());
 
-    ArcticHiveCatalog arcticHiveCatalog =
-        (ArcticHiveCatalog)
+    MixedHiveCatalog mixedHiveCatalog =
+        (MixedHiveCatalog)
             CatalogLoader.createCatalog(
                 catalog, catalogMeta.getCatalogType(), catalogProperties, tableMetaStore);
 
@@ -222,7 +222,7 @@ public class TableController {
           upgradeRunningInfo.put(tableIdentifier, new UpgradeRunningInfo());
           try {
             UpgradeHiveTableUtil.upgradeHiveTable(
-                arcticHiveCatalog,
+                mixedHiveCatalog,
                 TableIdentifier.of(catalog, db, table),
                 upgradeHiveMeta.getPkList().stream()
                     .map(UpgradeHiveMeta.PrimaryKeyField::getFieldName)
@@ -230,7 +230,7 @@ public class TableController {
                 upgradeHiveMeta.getProperties());
             upgradeRunningInfo.get(tableIdentifier).setStatus(UpgradeStatus.SUCCESS.toString());
           } catch (Throwable t) {
-            LOG.error("Failed to upgrade hive table to arctic ", t);
+            LOG.error("Failed to upgrade hive table to mixed-hive table ", t);
             upgradeRunningInfo.get(tableIdentifier).setErrorMessage(AmsUtil.getStackTrace(t));
             upgradeRunningInfo.get(tableIdentifier).setStatus(UpgradeStatus.FAILED.toString());
           } finally {
@@ -255,7 +255,7 @@ public class TableController {
   }
 
   /**
-   * get table properties for upgrading hive to arctic.
+   * get table properties for upgrading hive table to mixed-hive table.
    *
    * @param ctx - context for handling the request and response
    */
@@ -297,7 +297,7 @@ public class TableController {
     ServerCatalog serverCatalog = tableService.getServerCatalog(catalog);
     Preconditions.checkArgument(offset >= 0, "offset[%s] must >= 0", offset);
     Preconditions.checkArgument(limit >= 0, "limit[%s] must >= 0", limit);
-    Preconditions.checkState(serverCatalog.exist(db, table), "no such table");
+    Preconditions.checkState(serverCatalog.tableExists(db, table), "no such table");
 
     TableIdentifier tableIdentifier = TableIdentifier.of(catalog, db, table);
     Pair<List<OptimizingProcessInfo>, Integer> optimizingProcessesInfo =
@@ -327,7 +327,7 @@ public class TableController {
     ServerCatalog serverCatalog = tableService.getServerCatalog(catalog);
     Preconditions.checkArgument(offset >= 0, "offset[%s] must >= 0", offset);
     Preconditions.checkArgument(limit >= 0, "limit[%s] must >= 0", limit);
-    Preconditions.checkState(serverCatalog.exist(db, table), "no such table");
+    Preconditions.checkState(serverCatalog.tableExists(db, table), "no such table");
 
     TableIdentifier tableIdentifier = TableIdentifier.of(catalog, db, table);
     List<OptimizingTaskInfo> optimizingTaskInfos =
@@ -517,10 +517,10 @@ public class TableController {
           new CachedHiveClientPool(tableMetaStore, catalogMeta.getCatalogProperties());
 
       List<String> hiveTables = HiveTableUtil.getAllHiveTables(hmsClientPool, db);
-      Set<String> arcticTables =
+      Set<String> mixedHiveTables =
           tables.stream().map(TableMeta::getName).collect(Collectors.toSet());
       hiveTables.stream()
-          .filter(e -> !arcticTables.contains(e))
+          .filter(e -> !mixedHiveTables.contains(e))
           .sorted(String::compareTo)
           .forEach(e -> tables.add(new TableMeta(e, TableMeta.TableType.HIVE.toString())));
     }

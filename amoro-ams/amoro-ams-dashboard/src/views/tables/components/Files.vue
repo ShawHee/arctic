@@ -24,7 +24,7 @@ limitations under the License.
         <a-input-search
           v-model:value="searchKey"
           :placeholder="$t('fileSearchPlaceholder')"
-          @search="(val) => handleSearch(val)"
+          @search="(val: string) => handleSearch(val)"
           style="width: 350px"
         >
           <template #prefix>
@@ -93,10 +93,6 @@ import { BreadcrumbPartitionItem, IColumns, PartitionItem } from '@/types/common
 import { getPartitionFiles, getPartitionTable } from '@/services/table.service'
 import { useRoute } from 'vue-router'
 import { dateFormat } from '@/utils'
-import { SearchOutlined, CloseCircleOutlined } from '@ant-design/icons-vue'
-
-import { Button as AButton, Table as ATable, Tooltip as ATooltip, InputSearch as AInputSearch, Breadcrumb as ABreadcrumb, BreadcrumbItem as ABreadcrumbItem } from 'ant-design-vue'
-
 
 const hasBreadcrumb = ref<boolean>(false)
 const { t } = useI18n()
@@ -147,7 +143,7 @@ async function getTableInfo() {
       ...sourceData,
       filter: searchKey.value,
       page: pagination.current,
-      pageSize: pagination.pageSize
+      pageSize: pagination.pageSize,
     })
     const { list, total } = result
     pagination.total = total;

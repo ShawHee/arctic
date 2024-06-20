@@ -34,6 +34,10 @@ import static org.apache.iceberg.TableProperties.PARQUET_PAGE_SIZE_BYTES_DEFAULT
 import static org.apache.iceberg.TableProperties.PARQUET_ROW_GROUP_SIZE_BYTES;
 import static org.apache.iceberg.TableProperties.PARQUET_ROW_GROUP_SIZE_BYTES_DEFAULT;
 
+import org.apache.amoro.shade.guava32.com.google.common.annotations.VisibleForTesting;
+import org.apache.amoro.shade.guava32.com.google.common.base.Preconditions;
+import org.apache.amoro.shade.guava32.com.google.common.collect.Maps;
+import org.apache.amoro.shade.guava32.com.google.common.collect.Sets;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.iceberg.FileFormat;
 import org.apache.iceberg.Files;
@@ -61,10 +65,6 @@ import org.apache.iceberg.io.OutputFile;
 import org.apache.iceberg.mapping.NameMapping;
 import org.apache.iceberg.parquet.ParquetValueWriters.PositionDeleteStructWriter;
 import org.apache.iceberg.parquet.ParquetValueWriters.StructWriter;
-import org.apache.iceberg.relocated.com.google.common.annotations.VisibleForTesting;
-import org.apache.iceberg.relocated.com.google.common.base.Preconditions;
-import org.apache.iceberg.relocated.com.google.common.collect.Maps;
-import org.apache.iceberg.relocated.com.google.common.collect.Sets;
 import org.apache.iceberg.util.ArrayUtil;
 import org.apache.iceberg.util.PropertyUtil;
 import org.apache.parquet.HadoopReadOptions;
@@ -270,7 +270,7 @@ public class AdaptHiveParquet {
                 .withDictionaryPageSize(dictionaryPageSize)
                 .build();
 
-        // Change For Arctic
+        // Change for mixed-hive table ⬇
         return new org.apache.iceberg.parquet.AdaptHiveParquetWriter<>(
             conf,
             file,
@@ -282,7 +282,7 @@ public class AdaptHiveParquet {
             parquetProperties,
             metricsConfig,
             writeMode);
-        // Change For Arctic
+        // Change for mixed-hive table ⬆
       } else {
         return new ParquetWriteAdapter<>(
             new ParquetWriteBuilder<D>(ParquetIO.file(file))
@@ -878,7 +878,7 @@ public class AdaptHiveParquet {
               caseSensitive,
               maxRecordsPerBatch);
         } else {
-          // Change For Arctic
+          // Change for mixed-hive table ⬇
           return new AdaptHiveParquetReader<>(
               file,
               schema,
@@ -888,7 +888,7 @@ public class AdaptHiveParquet {
               filter,
               reuseContainers,
               caseSensitive);
-          // Change For Arctic
+          // Change for mixed-hive table ⬆
         }
       }
 

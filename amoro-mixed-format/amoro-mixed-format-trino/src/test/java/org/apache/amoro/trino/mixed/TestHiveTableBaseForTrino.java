@@ -20,17 +20,19 @@ package org.apache.amoro.trino.mixed;
 
 import static org.apache.amoro.MockAmoroManagementServer.TEST_CATALOG_NAME;
 
+import io.trino.testng.services.ManageTestResources;
 import org.apache.amoro.TableFormat;
+import org.apache.amoro.hive.HMSMockServer;
+import org.apache.amoro.hive.catalog.HiveCatalogTestHelper;
+import org.apache.amoro.hive.catalog.MixedHiveCatalog;
+import org.apache.amoro.hive.table.KeyedHiveTable;
+import org.apache.amoro.hive.table.UnkeyedHiveTable;
 import org.apache.amoro.mixed.CatalogLoader;
+import org.apache.amoro.shade.guava32.com.google.common.base.Joiner;
+import org.apache.amoro.shade.guava32.com.google.common.collect.Lists;
 import org.apache.amoro.table.MixedTable;
 import org.apache.amoro.table.TableIdentifier;
 import org.apache.amoro.table.TableProperties;
-import io.trino.testng.services.ManageTestResources;
-import org.apache.amoro.hive.HMSMockServer;
-import org.apache.amoro.hive.catalog.ArcticHiveCatalog;
-import org.apache.amoro.hive.catalog.HiveCatalogTestHelper;
-import org.apache.amoro.hive.table.KeyedHiveTable;
-import org.apache.amoro.hive.table.UnkeyedHiveTable;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.hive.metastore.api.Database;
 import org.apache.hadoop.hive.metastore.api.Partition;
@@ -39,8 +41,6 @@ import org.apache.iceberg.DataFile;
 import org.apache.iceberg.DataFiles;
 import org.apache.iceberg.PartitionSpec;
 import org.apache.iceberg.Schema;
-import org.apache.iceberg.relocated.com.google.common.base.Joiner;
-import org.apache.iceberg.relocated.com.google.common.collect.Lists;
 import org.apache.iceberg.types.Types;
 import org.apache.thrift.TException;
 import org.junit.Assert;
@@ -109,7 +109,7 @@ public abstract class TestHiveTableBaseForTrino extends TableTestBaseForTrino {
   protected static final PartitionSpec HIVE_SPEC =
       PartitionSpec.builderFor(HIVE_TABLE_SCHEMA).identity(COLUMN_NAME_NAME).build();
 
-  protected ArcticHiveCatalog hiveCatalog;
+  protected MixedHiveCatalog hiveCatalog;
   protected UnkeyedHiveTable testHiveTable;
   protected KeyedHiveTable testKeyedHiveTable;
 
@@ -141,7 +141,7 @@ public abstract class TestHiveTableBaseForTrino extends TableTestBaseForTrino {
   }
 
   protected void setupTables() throws Exception {
-    hiveCatalog = (ArcticHiveCatalog) CatalogLoader.load(AMS.getUrl(TEST_CATALOG_NAME));
+    hiveCatalog = (MixedHiveCatalog) CatalogLoader.load(AMS.getUrl(TEST_CATALOG_NAME));
 
     testHiveTable =
         (UnkeyedHiveTable)

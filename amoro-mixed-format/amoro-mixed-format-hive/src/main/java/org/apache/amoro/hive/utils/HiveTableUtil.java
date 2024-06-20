@@ -20,6 +20,7 @@ package org.apache.amoro.hive.utils;
 
 import org.apache.amoro.hive.HMSClientPool;
 import org.apache.amoro.properties.HiveTableProperties;
+import org.apache.amoro.shade.guava32.com.google.common.collect.Maps;
 import org.apache.amoro.table.TableIdentifier;
 import org.apache.amoro.utils.IdGenerator;
 import org.apache.hadoop.hive.metastore.api.NoSuchObjectException;
@@ -31,7 +32,6 @@ import org.apache.iceberg.FileFormat;
 import org.apache.iceberg.PartitionSpec;
 import org.apache.iceberg.Schema;
 import org.apache.iceberg.StructLike;
-import org.apache.iceberg.relocated.com.google.common.collect.Maps;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,7 +140,7 @@ public class HiveTableUtil {
   /**
    * Check whether the table is in Hive.
    *
-   * @param hiveClient Hive client from ArcticHiveCatalog
+   * @param hiveClient Hive client from MixedHiveCatalog
    * @param tableIdentifier A table identifier
    * @return If table is existed in hive
    */
@@ -163,7 +163,7 @@ public class HiveTableUtil {
   /**
    * Gets all the tables in a database.
    *
-   * @param hiveClient Hive client from ArcticHiveCatalog
+   * @param hiveClient Hive client from MixedHiveCatalog
    * @param database Hive database
    * @return A List of table-names from hive database
    */
@@ -181,7 +181,7 @@ public class HiveTableUtil {
   /**
    * Change the location of the Hive table.
    *
-   * @param hiveClient Hive client from ArcticHiveCatalog
+   * @param hiveClient Hive client from MixedHiveCatalog
    * @param tableIdentifier A table identifier
    */
   public static void alterTableLocation(

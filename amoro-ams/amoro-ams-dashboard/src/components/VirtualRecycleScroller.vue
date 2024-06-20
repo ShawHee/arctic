@@ -27,7 +27,7 @@
   >
     <div :class="{'active': activeItem === item.label, 'hive-table': item.type === 'HIVE'}" @mouseenter="handleMouseEnter(item)" @click="handleClickTable(item)" class="desc">
       <svg-icon v-if="iconName === 'database'" icon-class="database" class="table-icon g-mr-8" />
-      <svg-icon v-else :icon-class="tableTypeIconMap[item.type]" class="table-icon g-mr-8" />
+      <svg-icon v-else :icon-class="tableTypeIconMap[item.type as keyof typeof tableTypeIconMap]" class="table-icon g-mr-8" />
       <p :title="item.label" class="name g-text-nowrap">
         {{ item.label }}
       </p>
@@ -49,7 +49,7 @@ export default defineComponent ({
     RecycleScroller
   },
   emits: ['mouseEnter', 'handleClickTable'],
-  setup(props, { emit }) {
+  setup(_, { emit }) {
     const handleMouseEnter = (item: IMap<string>) => {
       emit('mouseEnter', item.label)
     }
@@ -105,7 +105,6 @@ export default defineComponent ({
   justify-content: flex-start;
   align-items: center;
   padding: 10px 12px;
-  height: 40px;
   color: rgba(255,255,255,0.8);
   cursor: pointer;
   &.active,

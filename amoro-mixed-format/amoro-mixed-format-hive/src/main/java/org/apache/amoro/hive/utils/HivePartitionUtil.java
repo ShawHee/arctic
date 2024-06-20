@@ -20,6 +20,7 @@ package org.apache.amoro.hive.utils;
 
 import org.apache.amoro.hive.HMSClient;
 import org.apache.amoro.hive.HMSClientPool;
+import org.apache.amoro.shade.guava32.com.google.common.collect.Lists;
 import org.apache.amoro.table.MixedTable;
 import org.apache.amoro.table.TableIdentifier;
 import org.apache.hadoop.hive.metastore.PartitionDropOptions;
@@ -34,7 +35,6 @@ import org.apache.iceberg.DataFiles;
 import org.apache.iceberg.PartitionSpec;
 import org.apache.iceberg.StructLike;
 import org.apache.iceberg.exceptions.NoSuchTableException;
-import org.apache.iceberg.relocated.com.google.common.collect.Lists;
 import org.apache.iceberg.types.Type;
 import org.apache.iceberg.types.Types;
 import org.apache.thrift.TException;
@@ -131,7 +131,7 @@ public class HivePartitionUtil {
   /**
    * Gets all partitions object of the Hive table.
    *
-   * @param hiveClient Hive client from ArcticHiveCatalog
+   * @param hiveClient Hive client from MixedHiveCatalog
    * @param tableIdentifier A table identifier
    * @return A List of Hive partition objects
    */
@@ -156,7 +156,7 @@ public class HivePartitionUtil {
   /**
    * Gets all partition names of the Hive table.
    *
-   * @param hiveClient Hive client from ArcticHiveCatalog
+   * @param hiveClient Hive client from MixedHiveCatalog
    * @param tableIdentifier A table identifier
    * @return A List of Hive partition names
    */
@@ -186,7 +186,7 @@ public class HivePartitionUtil {
   /**
    * Gets all partitions location of the Hive table.
    *
-   * @param hiveClient Hive client from ArcticHiveCatalog
+   * @param hiveClient Hive client from MixedHiveCatalog
    * @param tableIdentifier A table identifier
    * @return A List of Hive partition locations
    */
@@ -217,7 +217,7 @@ public class HivePartitionUtil {
   /**
    * Change the Hive partition location.
    *
-   * @param hiveClient Hive client from ArcticHiveCatalog
+   * @param hiveClient Hive client from MixedHiveCatalog
    * @param tableIdentifier A table identifier
    * @param partition A Hive partition name
    * @param newPath Target partition location

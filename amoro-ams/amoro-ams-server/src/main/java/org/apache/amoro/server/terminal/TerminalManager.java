@@ -24,7 +24,7 @@ import org.apache.amoro.api.CatalogMeta;
 import org.apache.amoro.api.config.ConfigOptions;
 import org.apache.amoro.api.config.Configurations;
 import org.apache.amoro.properties.CatalogMetaProperties;
-import org.apache.amoro.server.ArcticManagementConf;
+import org.apache.amoro.server.AmoroManagementConf;
 import org.apache.amoro.server.catalog.CatalogType;
 import org.apache.amoro.server.dashboard.model.LatestSessionInfo;
 import org.apache.amoro.server.dashboard.model.LogInfo;
@@ -33,11 +33,11 @@ import org.apache.amoro.server.dashboard.utils.AmsUtil;
 import org.apache.amoro.server.table.TableService;
 import org.apache.amoro.server.terminal.kyuubi.KyuubiTerminalSessionFactory;
 import org.apache.amoro.server.terminal.local.LocalSessionFactory;
+import org.apache.amoro.shade.guava32.com.google.common.collect.Lists;
+import org.apache.amoro.shade.guava32.com.google.common.collect.Maps;
 import org.apache.amoro.table.TableMetaStore;
 import org.apache.amoro.utils.MixedCatalogUtil;
 import org.apache.iceberg.CatalogProperties;
-import org.apache.iceberg.relocated.com.google.common.collect.Lists;
-import org.apache.iceberg.relocated.com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,9 +83,9 @@ public class TerminalManager {
   public TerminalManager(Configurations conf, TableService tableService) {
     this.serviceConfig = conf;
     this.tableService = tableService;
-    this.resultLimits = conf.getInteger(ArcticManagementConf.TERMINAL_RESULT_LIMIT);
-    this.stopOnError = conf.getBoolean(ArcticManagementConf.TERMINAL_STOP_ON_ERROR);
-    this.sessionTimeout = conf.getInteger(ArcticManagementConf.TERMINAL_SESSION_TIMEOUT);
+    this.resultLimits = conf.getInteger(AmoroManagementConf.TERMINAL_RESULT_LIMIT);
+    this.stopOnError = conf.getBoolean(AmoroManagementConf.TERMINAL_STOP_ON_ERROR);
+    this.sessionTimeout = conf.getInteger(AmoroManagementConf.TERMINAL_SESSION_TIMEOUT);
     this.sessionFactory = loadTerminalSessionFactory(conf);
     gcThread = new Thread(new SessionCleanTask());
     gcThread.setName("terminal-session-gc");
@@ -107,6 +107,9 @@ public class TerminalManager {
     String connectorType = catalogConnectorType(catalogMeta);
     applyClientProperties(catalogMeta);
     Configurations configuration = new Configurations();
+    configuration.set(
+        AmoroManagementConf.TERMINAL_SENSITIVE_CONF_KEYS,
+        serviceConfig.get(AmoroManagementConf.TERMINAL_SENSITIVE_CONF_KEYS));
     configuration.setInteger(TerminalSessionFactory.SessionConfigOptions.FETCH_SIZE, resultLimits);
     configuration.set(
         TerminalSessionFactory.SessionConfigOptions.CATALOGS, Lists.newArrayList(catalog));
@@ -320,7 +323,7 @@ public class TerminalManager {
   }
 
   private TerminalSessionFactory loadTerminalSessionFactory(Configurations conf) {
-    String backend = conf.get(ArcticManagementConf.TERMINAL_BACKEND);
+    String backend = conf.get(AmoroManagementConf.TERMINAL_BACKEND);
     if (backend == null) {
       throw new IllegalArgumentException("lack terminal implement config.");
     }
@@ -334,7 +337,7 @@ public class TerminalManager {
         break;
       case "custom":
         Optional<String> customFactoryClz =
-            conf.getOptional(ArcticManagementConf.TERMINAL_SESSION_FACTORY);
+            conf.getOptional(AmoroManagementConf.TERMINAL_SESSION_FACTORY);
         if (!customFactoryClz.isPresent()) {
           throw new IllegalArgumentException(
               "terminal backend type is custom, but terminal session factory is not "
@@ -353,17 +356,20 @@ public class TerminalManager {
       throw new RuntimeException("failed to init session factory", e);
     }
 
-    String factoryPropertiesPrefix = ArcticManagementConf.TERMINAL_PREFIX + backend + ".";
+    String factoryPropertiesPrefix = AmoroManagementConf.TERMINAL_PREFIX + backend + ".";
     Configurations configuration = new Configurations();
 
     for (String key : conf.keySet()) {
-      if (!key.startsWith(ArcticManagementConf.TERMINAL_PREFIX)) {
+      if (!key.startsWith(AmoroManagementConf.TERMINAL_PREFIX)) {
         continue;
       }
       String value = conf.getValue(ConfigOptions.key(key).stringType().noDefaultValue());
       key = key.substring(factoryPropertiesPrefix.length());
       configuration.setString(key, value);
     }
+    configuration.set(
+        AmoroManagementConf.TERMINAL_SENSITIVE_CONF_KEYS,
+        serviceConfig.get(AmoroManagementConf.TERMINAL_SENSITIVE_CONF_KEYS));
     configuration.set(TerminalSessionFactory.FETCH_SIZE, this.resultLimits);
     factory.initialize(configuration);
     return factory;
@@ -392,13 +398,13 @@ public class TerminalManager {
       LOG.info("Terminal Session Clean Task started");
       LOG.info(
           "Terminal Session Clean Task, check interval: " + SESSION_TIMEOUT_CHECK_INTERVAL + " ms");
-      LOG.info("Terminal Session Timeout: " + sessionTimeout + " minutes");
+      LOG.info("Terminal Session Timeout: {} minutes", sessionTimeout);
       while (!stop) {
         try {
           List<TerminalSessionContext> sessionToRelease = checkIdleSession();
           sessionToRelease.forEach(this::releaseSession);
           if (!sessionToRelease.isEmpty()) {
-            LOG.info("Terminal Session release count: " + sessionToRelease.size());
+            LOG.info("Terminal Session release count: {}", sessionToRelease.size());
           }
         } catch (Throwable t) {
           LOG.error("error when check and release session", t);
@@ -435,7 +441,7 @@ public class TerminalManager {
       try {
         sessionContext.release();
       } catch (Throwable t) {
-        LOG.error("error when release session: " + sessionContext.getSessionId(), t);
+        LOG.error("error when release session: {}", sessionContext.getSessionId(), t);
       }
     }
   }

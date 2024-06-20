@@ -21,10 +21,11 @@ package org.apache.amoro.server.optimizing.plan;
 import org.apache.amoro.TableFormat;
 import org.apache.amoro.hive.table.SupportHive;
 import org.apache.amoro.hive.utils.TableTypeUtil;
-import org.apache.amoro.server.ArcticServiceConstants;
+import org.apache.amoro.server.AmoroServiceConstants;
 import org.apache.amoro.server.optimizing.OptimizingType;
 import org.apache.amoro.server.table.KeyedTableSnapshot;
 import org.apache.amoro.server.table.TableRuntime;
+import org.apache.amoro.shade.guava32.com.google.common.collect.Lists;
 import org.apache.amoro.table.MixedTable;
 import org.apache.amoro.utils.ExpressionUtil;
 import org.apache.amoro.utils.MixedTableUtil;
@@ -32,7 +33,6 @@ import org.apache.iceberg.PartitionSpec;
 import org.apache.iceberg.StructLike;
 import org.apache.iceberg.expressions.Expression;
 import org.apache.iceberg.expressions.Expressions;
-import org.apache.iceberg.relocated.com.google.common.collect.Lists;
 import org.apache.iceberg.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -128,7 +128,7 @@ public class OptimizingPlanner extends OptimizingEvaluator {
     if (currentSnapshot instanceof KeyedTableSnapshot) {
       return ((KeyedTableSnapshot) currentSnapshot).changeSnapshotId();
     } else {
-      return ArcticServiceConstants.INVALID_SNAPSHOT_ID;
+      return AmoroServiceConstants.INVALID_SNAPSHOT_ID;
     }
   }
 

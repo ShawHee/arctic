@@ -30,6 +30,8 @@ import org.apache.amoro.io.AuthenticatedHadoopFileIO;
 import org.apache.amoro.io.TableTrashManagers;
 import org.apache.amoro.properties.HiveTableProperties;
 import org.apache.amoro.properties.MetaTableProperties;
+import org.apache.amoro.shade.guava32.com.google.common.base.Preconditions;
+import org.apache.amoro.shade.guava32.com.google.common.collect.Maps;
 import org.apache.amoro.table.ChangeTable;
 import org.apache.amoro.table.KeyedTable;
 import org.apache.amoro.table.MixedTable;
@@ -49,8 +51,6 @@ import org.apache.iceberg.exceptions.NoSuchTableException;
 import org.apache.iceberg.hadoop.HadoopTables;
 import org.apache.iceberg.mapping.MappingUtil;
 import org.apache.iceberg.mapping.NameMappingParser;
-import org.apache.iceberg.relocated.com.google.common.base.Preconditions;
-import org.apache.iceberg.relocated.com.google.common.collect.Maps;
 import org.apache.iceberg.util.PropertyUtil;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -403,7 +403,7 @@ public class MixedHiveTables {
       } else {
         String tableLocation = tableMeta.getLocations().get(MetaTableProperties.LOCATION_KEY_TABLE);
         if (fileIO.exists(tableLocation)) {
-          LOG.info("try to delete table directory location is " + tableLocation);
+          LOG.info("try to delete table directory location is {}", tableLocation);
           fileIO.asPrefixFileIO().deletePrefix(tableLocation);
         }
       }
@@ -442,7 +442,7 @@ public class MixedHiveTables {
       return;
     }
     // Drop hive table operation will only delete hive table metadata
-    // Delete data files operation will use BasicArcticCatalog
+    // Delete data files operation will use MixedHiveCatalog
     if (purge) {
       try {
         hiveClientPool.run(
@@ -458,7 +458,8 @@ public class MixedHiveTables {
         throw new RuntimeException("Failed to drop table:" + tableMeta.getTableIdentifier(), e);
       }
     } else {
-      // If purge is not true, we will not drop the hive table and need to remove the arctic table
+      // If purge is not true, we will not drop the hive table and need to remove the mixed-hive
+      // table
       // flag
       try {
         hiveClientPool.run(

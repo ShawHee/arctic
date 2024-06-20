@@ -51,11 +51,11 @@ import org.apache.amoro.server.table.RuntimeHandlerChain;
 import org.apache.amoro.server.table.TableRuntime;
 import org.apache.amoro.server.table.TableRuntimeMeta;
 import org.apache.amoro.server.table.TableService;
+import org.apache.amoro.shade.guava32.com.google.common.base.Preconditions;
+import org.apache.amoro.shade.guava32.com.google.common.collect.ImmutableList;
+import org.apache.amoro.shade.guava32.com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.amoro.table.TableProperties;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.iceberg.relocated.com.google.common.base.Preconditions;
-import org.apache.iceberg.relocated.com.google.common.collect.ImmutableList;
-import org.apache.iceberg.relocated.com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,10 +77,9 @@ import java.util.stream.Collectors;
 
 /**
  * DefaultOptimizingService is implementing the OptimizerManager Thrift service, which manages the
- * optimization tasks for ArcticTable. It includes methods for authenticating optimizers, polling
- * tasks from the optimizing queue, acknowledging tasks,and completing tasks. The code uses several
- * data structures, including maps for optimizing queues ,task runtimes, and authenticated
- * optimizers.
+ * optimizing tasks for tables. It includes methods for authenticating optimizers, polling tasks
+ * from the optimizing queue, acknowledging tasks,and completing tasks. The code uses several data
+ * structures, including maps for optimizing queues ,task runtimes, and authenticated optimizers.
  *
  * <p>The code also includes a TimerTask for detecting and removing expired optimizers and
  * suspending tasks.
@@ -103,11 +102,11 @@ public class DefaultOptimizingService extends StatedPersistentBase
   private final Executor planExecutor;
 
   public DefaultOptimizingService(Configurations serviceConfig, DefaultTableService tableService) {
-    this.optimizerTouchTimeout = serviceConfig.getLong(ArcticManagementConf.OPTIMIZER_HB_TIMEOUT);
-    this.taskAckTimeout = serviceConfig.getLong(ArcticManagementConf.OPTIMIZER_TASK_ACK_TIMEOUT);
+    this.optimizerTouchTimeout = serviceConfig.getLong(AmoroManagementConf.OPTIMIZER_HB_TIMEOUT);
+    this.taskAckTimeout = serviceConfig.getLong(AmoroManagementConf.OPTIMIZER_TASK_ACK_TIMEOUT);
     this.maxPlanningParallelism =
-        serviceConfig.getInteger(ArcticManagementConf.OPTIMIZER_MAX_PLANNING_PARALLELISM);
-    this.pollingTimeout = serviceConfig.getLong(ArcticManagementConf.OPTIMIZER_POLLING_TIMEOUT);
+        serviceConfig.getInteger(AmoroManagementConf.OPTIMIZER_MAX_PLANNING_PARALLELISM);
+    this.pollingTimeout = serviceConfig.getLong(AmoroManagementConf.OPTIMIZER_POLLING_TIMEOUT);
     this.tableService = tableService;
     this.tableHandlerChain = new TableRuntimeHandlerImpl();
     this.planExecutor =
@@ -146,7 +145,7 @@ public class DefaultOptimizingService extends StatedPersistentBase
     optimizers.forEach(optimizer -> registerOptimizer(optimizer, false));
     groupToTableRuntimes
         .keySet()
-        .forEach(groupName -> LOG.warn("Unloaded task runtime in group " + groupName));
+        .forEach(groupName -> LOG.warn("Unloaded task runtime in group {}", groupName));
   }
 
   private void registerOptimizer(OptimizerInstance optimizer, boolean needPersistency) {
@@ -248,7 +247,7 @@ public class DefaultOptimizingService extends StatedPersistentBase
                         "The %s:%s configuration should be less than AMS's %s:%s",
                         OptimizerProperties.OPTIMIZER_HEART_BEAT_INTERVAL,
                         interval,
-                        ArcticManagementConf.OPTIMIZER_HB_TIMEOUT.key(),
+                        AmoroManagementConf.OPTIMIZER_HB_TIMEOUT.key(),
                         optimizerTouchTimeout));
               }
             });

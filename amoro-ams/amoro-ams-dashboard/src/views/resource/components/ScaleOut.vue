@@ -19,7 +19,7 @@ limitations under the License.
 
 <template>
   <a-modal
-    :visible="true"
+    :open="true"
     :title="$t('scaleOut')"
     :confirmLoading="confirmLoading"
     :closable="false"
@@ -50,7 +50,7 @@ import { usePlaceholder } from '@/hooks/usePlaceholder'
 import { IIOptimizeGroupItem } from '@/types/common.type'
 import { scaleoutResource } from '@/services/optimize.service'
 
-import { Modal as AModal, Input as AInput, Form as AForm, FormItem as AFormItem  } from 'ant-design-vue'
+import { Modal as AModal } from 'ant-design-vue'
 
 interface FormState {
   resourceGroup: undefined | string;

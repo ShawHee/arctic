@@ -38,7 +38,7 @@ Self-optimizing configurations are applicable to both Iceberg Format and Mixed s
 | self-optimizing.max-task-size-bytes           | 134217728(128MB) | Maximum file size bytes in a single task for splitting tasks                                                                             |
 | self-optimizing.fragment-ratio                | 8                | The fragment file size threshold. We could divide self-optimizing.target-size by this ratio to get the actual fragment file size         |
 | self-optimizing.min-target-size-ratio         | 0.75             | The undersized segment file size threshold. Segment files under this threshold will be considered for rewriting                          |
-| self-optimizing.minor.trigger.file-count      | 12               | The minimum number of files to trigger minor optimizing is determined by the sum of fragment file count and equality delete file count |
+| self-optimizing.minor.trigger.file-count      | 12               | The minimum number of files to trigger minor optimizing is determined by the sum of fragment file count and equality delete file count   |
 | self-optimizing.minor.trigger.interval        | 3600000(1 hour)  | The time interval in milliseconds to trigger minor optimizing                                                                            |
 | self-optimizing.major.trigger.duplicate-ratio | 0.1              | The ratio of duplicate data of segment files to trigger major optimizing                                                                 |
 | self-optimizing.full.trigger.interval         | -1(closed)       | The time interval in milliseconds to trigger full optimizing                                                                             |
@@ -94,18 +94,18 @@ If using Iceberg Format，please refer to [Iceberg configurations](https://icebe
 
 ### Writing configurations
 
-| Key                            | Default         | Description                                                                                                     |
-|--------------------------------|-----------------|-----------------------------------------------------------------------------------------------------------------|
-| base.write.format              | parquet         | File format for the table for BaseStore, applicable to KeyedTable                                               |
-| change.write.format            | parquet         | File format for the table for ChangeStore, applicable to KeyedTable                                             |
-| write.format.default           | parquet         | Default file format for the table, applicable to UnkeyedTable                                                   |
-| base.file-index.hash-bucket    | 4               | Initial number of buckets for BaseStore auto-bucket                                                             |
-| change.file-index.hash-bucket  | 4               | Initial number of buckets for ChangeStore auto-bucket                                                           |
-| write.target-file-size-bytes   | 134217728(128MB) | Target size when writing                                                                                        |
-| write.upsert.enabled           | false           | Enable upsert mode, multiple insert data with the same primary key will be merged if enabled                    |
-| write.distribution-mode        | hash            | Shuffle rules for writing. UnkeyedTable can choose between none and hash, while KeyedTable can only choose hash |
-| write.distribution.hash-mode   | auto            | Auto-bucket mode, which supports primary-key, partition-key, primary-partition-key, and auto                    |
-
+| Key                           | Default          | Description                                                                                                     |
+|-------------------------------|------------------|-----------------------------------------------------------------------------------------------------------------|
+| base.write.format             | parquet          | File format for the table for BaseStore, applicable to KeyedTable                                               |
+| change.write.format           | parquet          | File format for the table for ChangeStore, applicable to KeyedTable                                             |
+| write.format.default          | parquet          | Default file format for the table, applicable to UnkeyedTable                                                   |
+| base.file-index.hash-bucket   | 4                | Initial number of buckets for BaseStore auto-bucket                                                             |
+| change.file-index.hash-bucket | 4                | Initial number of buckets for ChangeStore auto-bucket                                                           |
+| write.target-file-size-bytes  | 134217728(128MB) | Target size when writing                                                                                        |
+| write.upsert.enabled          | false            | Enable upsert mode, multiple insert data with the same primary key will be merged if enabled                    |
+| write.distribution-mode       | hash             | Shuffle rules for writing. UnkeyedTable can choose between none and hash, while KeyedTable can only choose hash |
+| write.distribution.hash-mode  | auto             | Auto-bucket mode, which supports primary-key, partition-key, primary-partition-key, and auto                    |
+| base.refresh-interval         | -1 (Closed)      | The interval for refreshing the BaseStore                                                                       |
 
 ### LogStore configurations
 

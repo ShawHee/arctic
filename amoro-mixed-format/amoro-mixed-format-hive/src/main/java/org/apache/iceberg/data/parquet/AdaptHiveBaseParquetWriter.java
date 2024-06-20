@@ -20,11 +20,11 @@ package org.apache.iceberg.data.parquet;
 
 import static java.util.concurrent.TimeUnit.MICROSECONDS;
 
+import org.apache.amoro.shade.guava32.com.google.common.collect.Lists;
 import org.apache.iceberg.parquet.AdaptHivePrimitiveWriter;
 import org.apache.iceberg.parquet.ParquetTypeVisitor;
 import org.apache.iceberg.parquet.ParquetValueWriter;
 import org.apache.iceberg.parquet.ParquetValueWriters;
-import org.apache.iceberg.relocated.com.google.common.collect.Lists;
 import org.apache.parquet.Preconditions;
 import org.apache.parquet.column.ColumnDescriptor;
 import org.apache.parquet.io.api.Binary;
@@ -150,10 +150,10 @@ public abstract class AdaptHiveBaseParquetWriter<T> {
           return ParquetValueWriters.floats(desc);
         case DOUBLE:
           return ParquetValueWriters.doubles(desc);
-          // Change For Arctic ⬇
+          // Change for mixed-hive table ⬇
         case INT96:
           return new TimestampInt96Writer(desc);
-          // Change For Arctic ⬆
+          // Change for mixed-hive table ⬆
         default:
           throw new UnsupportedOperationException("Unsupported type: " + primitive);
       }
@@ -314,7 +314,7 @@ public abstract class AdaptHiveBaseParquetWriter<T> {
     }
   }
 
-  // Change For Arctic ⬇
+  // Change for mixed-hive table ⬇
   private static class TimestampInt96Writer<T> extends AdaptHivePrimitiveWriter<T> {
 
     private static final long JULIAN_DAY_OF_EPOCH = 2440588L;
@@ -380,5 +380,5 @@ public abstract class AdaptHiveBaseParquetWriter<T> {
       }
     }
   }
-  // Change For Arctic ⬆
+  // Change for mixed-hive table ⬆
 }

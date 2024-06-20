@@ -28,12 +28,14 @@ import org.apache.amoro.data.PrimaryKeyedFile;
 import org.apache.amoro.hive.optimizing.MixFormatRewriteExecutorFactory;
 import org.apache.amoro.io.MixedDataTestHelpers;
 import org.apache.amoro.optimizing.OptimizingInputProperties;
-import org.apache.amoro.server.ArcticServiceConstants;
+import org.apache.amoro.server.AmoroServiceConstants;
 import org.apache.amoro.server.dashboard.utils.AmsUtil;
 import org.apache.amoro.server.optimizing.OptimizingTestHelpers;
 import org.apache.amoro.server.optimizing.scan.TableFileScanHelper;
 import org.apache.amoro.server.table.TableRuntime;
 import org.apache.amoro.server.utils.IcebergTableUtil;
+import org.apache.amoro.shade.guava32.com.google.common.collect.Lists;
+import org.apache.amoro.shade.guava32.com.google.common.collect.Maps;
 import org.apache.amoro.table.TableProperties;
 import org.apache.amoro.table.UnkeyedTable;
 import org.apache.amoro.utils.MixedDataFiles;
@@ -45,8 +47,6 @@ import org.apache.iceberg.StructLike;
 import org.apache.iceberg.Transaction;
 import org.apache.iceberg.data.Record;
 import org.apache.iceberg.io.CloseableIterable;
-import org.apache.iceberg.relocated.com.google.common.collect.Lists;
-import org.apache.iceberg.relocated.com.google.common.collect.Maps;
 import org.apache.iceberg.types.Types;
 import org.apache.iceberg.util.Pair;
 import org.apache.iceberg.util.PropertyUtil;
@@ -98,7 +98,7 @@ public abstract class MixedTablePlanTestBase extends TableTestBase {
     if (getMixedTable().isKeyedTable()) {
       return IcebergTableUtil.getSnapshotId(getMixedTable().asKeyedTable().changeTable(), false);
     } else {
-      return ArcticServiceConstants.INVALID_SNAPSHOT_ID;
+      return AmoroServiceConstants.INVALID_SNAPSHOT_ID;
     }
   }
 

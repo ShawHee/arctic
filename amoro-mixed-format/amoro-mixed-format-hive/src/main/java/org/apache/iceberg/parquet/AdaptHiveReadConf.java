@@ -18,14 +18,14 @@
 
 package org.apache.iceberg.parquet;
 
+import org.apache.amoro.shade.guava32.com.google.common.collect.ImmutableList;
+import org.apache.amoro.shade.guava32.com.google.common.collect.ImmutableMap;
 import org.apache.iceberg.MetadataColumns;
 import org.apache.iceberg.Schema;
 import org.apache.iceberg.exceptions.RuntimeIOException;
 import org.apache.iceberg.expressions.Expression;
 import org.apache.iceberg.io.InputFile;
 import org.apache.iceberg.mapping.NameMapping;
-import org.apache.iceberg.relocated.com.google.common.collect.ImmutableList;
-import org.apache.iceberg.relocated.com.google.common.collect.ImmutableMap;
 import org.apache.parquet.ParquetReadOptions;
 import org.apache.parquet.hadoop.ParquetFileReader;
 import org.apache.parquet.hadoop.metadata.BlockMetaData;
@@ -101,7 +101,8 @@ class AdaptHiveReadConf<T> {
     // Fetch all row groups starting positions to compute the row offsets of the filtered row groups
     Map<Long, Long> offsetToStartPos = generateOffsetToStartPos(expectedSchema);
 
-    // Change For Arctic: use arctic filter
+    // Change for mixed-hive table ⬇
+    // Use mixed-hive format filter
     AdaptHiveParquetMetricsRowGroupFilter statsFilter = null;
     AdaptHiveParquetDictionaryRowGroupFilter dictFilter = null;
     if (filter != null) {
@@ -110,7 +111,7 @@ class AdaptHiveReadConf<T> {
       dictFilter =
           new AdaptHiveParquetDictionaryRowGroupFilter(expectedSchema, filter, caseSensitive);
     }
-    // Change For Arctic
+    // Change for mixed-hive table ⬆
 
     long computedTotalValues = 0L;
     for (int i = 0; i < shouldSkip.length; i += 1) {

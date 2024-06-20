@@ -19,8 +19,8 @@
 package org.apache.amoro;
 
 import org.apache.amoro.api.AlreadyExistsException;
-import org.apache.amoro.api.ArcticException;
-import org.apache.amoro.api.ArcticTableMetastore;
+import org.apache.amoro.api.AmoroException;
+import org.apache.amoro.api.AmoroTableMetastore;
 import org.apache.amoro.api.BlockableOperation;
 import org.apache.amoro.api.Blocker;
 import org.apache.amoro.api.CatalogMeta;
@@ -33,15 +33,15 @@ import org.apache.amoro.api.OptimizingTaskResult;
 import org.apache.amoro.api.TableCommitMeta;
 import org.apache.amoro.api.TableIdentifier;
 import org.apache.amoro.api.TableMeta;
-import org.apache.thrift.TException;
-import org.apache.thrift.TMultiplexedProcessor;
-import org.apache.thrift.protocol.TBinaryProtocol;
-import org.apache.thrift.protocol.TProtocolFactory;
-import org.apache.thrift.server.TServer;
-import org.apache.thrift.server.TThreadPoolServer;
-import org.apache.thrift.transport.TFramedTransport;
-import org.apache.thrift.transport.TServerSocket;
-import org.apache.thrift.transport.TTransportException;
+import org.apache.amoro.shade.thrift.org.apache.thrift.TException;
+import org.apache.amoro.shade.thrift.org.apache.thrift.TMultiplexedProcessor;
+import org.apache.amoro.shade.thrift.org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.amoro.shade.thrift.org.apache.thrift.protocol.TProtocolFactory;
+import org.apache.amoro.shade.thrift.org.apache.thrift.server.TServer;
+import org.apache.amoro.shade.thrift.org.apache.thrift.server.TThreadPoolServer;
+import org.apache.amoro.shade.thrift.org.apache.thrift.transport.TServerSocket;
+import org.apache.amoro.shade.thrift.org.apache.thrift.transport.TTransportException;
+import org.apache.amoro.shade.thrift.org.apache.thrift.transport.layered.TFramedTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -152,8 +152,8 @@ public class MockAmoroManagementServer implements Runnable {
     try {
       TServerSocket socket = new TServerSocket(port);
       TMultiplexedProcessor processor = new TMultiplexedProcessor();
-      ArcticTableMetastore.Processor<AmsHandler> amsProcessor =
-          new ArcticTableMetastore.Processor<>(amsHandler);
+      AmoroTableMetastore.Processor<AmsHandler> amsProcessor =
+          new AmoroTableMetastore.Processor<>(amsHandler);
       processor.registerProcessor("TableMetastore", amsProcessor);
 
       OptimizingService.Processor<OptimizerManagerHandler> optimizerManProcessor =
@@ -179,7 +179,7 @@ public class MockAmoroManagementServer implements Runnable {
                 Thread thread = new Thread(r);
                 String threadName = "ams-pool-" + threadCount.incrementAndGet();
                 thread.setName(threadName);
-                LOG.info("Mock AMS create thread: " + threadName);
+                LOG.info("Mock AMS create thread: {}", threadName);
                 return thread;
               },
               new ThreadPoolExecutor.AbortPolicy());
@@ -210,7 +210,7 @@ public class MockAmoroManagementServer implements Runnable {
     }
   }
 
-  public static class AmsHandler implements ArcticTableMetastore.Iface {
+  public static class AmsHandler implements AmoroTableMetastore.Iface {
     private static final long DEFAULT_BLOCKER_TIMEOUT = 60_000;
     private final ConcurrentLinkedQueue<CatalogMeta> catalogs = new ConcurrentLinkedQueue<>();
     private final ConcurrentLinkedQueue<TableMeta> tables = new ConcurrentLinkedQueue<>();
@@ -437,7 +437,7 @@ public class MockAmoroManagementServer implements Runnable {
       }
       Map<Integer, OptimizingTaskId> executingTasksMap = executingTasks.get(authToken);
       if (executingTasksMap.containsKey(threadId)) {
-        throw new ArcticException(
+        throw new AmoroException(
             ErrorCodes.TASK_RUNTIME_ERROR_CODE,
             "DuplicateTask",
             String.format(
@@ -484,9 +484,9 @@ public class MockAmoroManagementServer implements Runnable {
       return completedTasks;
     }
 
-    private void checkToken(String token) throws ArcticException {
+    private void checkToken(String token) throws AmoroException {
       if (!registeredOptimizers.containsKey(token)) {
-        throw new ArcticException(
+        throw new AmoroException(
             ErrorCodes.PLUGIN_RETRY_AUTH_ERROR_CODE, "unknown token", "unknown token");
       }
     }

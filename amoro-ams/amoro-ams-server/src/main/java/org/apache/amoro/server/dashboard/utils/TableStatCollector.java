@@ -49,13 +49,13 @@ public class TableStatCollector {
       try {
         internalTable = table.changeTable();
       } catch (NoSuchTableException e) {
-        LOG.warn("No related hive table found. " + table.id(), e);
+        LOG.warn("No related hive table found. {}", table.id(), e);
       }
       TableStatistics tableInfo = new TableStatistics();
       fillTableStatistics(tableInfo, internalTable, table);
       return tableInfo;
     } catch (Exception e) {
-      LOG.error("failed to collect change table info of " + table.id(), e);
+      LOG.error("failed to collect change table info of {}", table.id(), e);
       return initEmptyTableStatistics(new TableStatistics(), table.id());
     }
   }
@@ -68,13 +68,13 @@ public class TableStatCollector {
       try {
         internalTable = table.baseTable();
       } catch (org.apache.iceberg.exceptions.NoSuchTableException e) {
-        LOG.warn("No related hive table found. " + table.id(), e);
+        LOG.warn("No related hive table found. {}", table.id(), e);
       }
       TableStatistics tableInfo = new TableStatistics();
       fillTableStatistics(tableInfo, internalTable, table);
       return tableInfo;
     } catch (Exception e) {
-      LOG.error("failed to collect base table info of " + table.id(), e);
+      LOG.error("failed to collect base table info of {}", table.id(), e);
       return initEmptyTableStatistics(new TableStatistics(), table.id());
     }
   }
@@ -213,8 +213,8 @@ public class TableStatCollector {
   }
 
   public static void fillTableStatistics(
-      TableStatistics tableStatistics, UnkeyedTable arcticInternalTable, MixedTable table) {
-    if (arcticInternalTable == null) {
+      TableStatistics tableStatistics, UnkeyedTable tableStore, MixedTable table) {
+    if (tableStore == null) {
       initEmptyTableStatistics(tableStatistics, table.id());
       return;
     }
@@ -222,7 +222,7 @@ public class TableStatCollector {
 
     // count current snapshot file count&size
     FilesStatisticsBuilder totalFileStatBuilder = new FilesStatisticsBuilder();
-    Snapshot currentSnapshot = arcticInternalTable.currentSnapshot();
+    Snapshot currentSnapshot = tableStore.currentSnapshot();
     if (currentSnapshot != null) {
       long addedFilesSize =
           PropertyUtil.propertyAsLong(
@@ -239,7 +239,7 @@ public class TableStatCollector {
     tableStatistics.setTotalFilesStat(totalFileStatBuilder.build());
 
     // list all history snapshot
-    Iterable<Snapshot> snapshots = arcticInternalTable.snapshots();
+    Iterable<Snapshot> snapshots = tableStore.snapshots();
     Snapshot firstSnapshot = null;
     Snapshot lastSnapshot = null;
     int snapshotCount = 0;
@@ -253,7 +253,7 @@ public class TableStatCollector {
 
     Map<String, String> summary = fillSummary(snapshotCount, lastSnapshot, firstSnapshot);
     tableStatistics.setSummary(summary);
-    fillTableSnapshotInfo(tableStatistics, arcticInternalTable);
+    fillTableSnapshotInfo(tableStatistics, tableStore);
   }
 
   private static TableStatistics initEmptyTableStatistics(

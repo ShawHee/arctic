@@ -19,11 +19,6 @@
 package org.apache.amoro.trino.keyed;
 
 import com.google.inject.Inject;
-import org.apache.amoro.data.PrimaryKeyedFile;
-import org.apache.amoro.scan.MixedFileScanTask;
-import org.apache.amoro.scan.KeyedTableScanTask;
-import org.apache.amoro.trino.delete.TrinoRow;
-import org.apache.amoro.trino.unkeyed.IcebergPageSourceProvider;
 import io.trino.filesystem.TrinoFileSystemFactory;
 import io.trino.plugin.iceberg.IcebergColumnHandle;
 import io.trino.plugin.iceberg.IcebergUtil;
@@ -36,10 +31,15 @@ import io.trino.spi.connector.ConnectorTableHandle;
 import io.trino.spi.connector.ConnectorTransactionHandle;
 import io.trino.spi.connector.DynamicFilter;
 import io.trino.spi.type.TypeManager;
+import org.apache.amoro.data.PrimaryKeyedFile;
 import org.apache.amoro.hive.io.reader.AdaptHiveMixedDeleteFilter;
+import org.apache.amoro.scan.KeyedTableScanTask;
+import org.apache.amoro.scan.MixedFileScanTask;
+import org.apache.amoro.shade.guava32.com.google.common.collect.ImmutableList;
+import org.apache.amoro.trino.delete.TrinoRow;
+import org.apache.amoro.trino.unkeyed.IcebergPageSourceProvider;
 import org.apache.iceberg.Schema;
 import org.apache.iceberg.SchemaParser;
-import org.apache.iceberg.relocated.com.google.common.collect.ImmutableList;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -96,7 +96,7 @@ public class KeyedPageSourceProvider implements ConnectorPageSourceProvider {
         .filter(column -> !columns.contains(column))
         .forEach(requiredColumnsBuilder::add);
     List<IcebergColumnHandle> requiredColumns = requiredColumnsBuilder.build();
-    AdaptHiveMixedDeleteFilter<TrinoRow> arcticDeleteFilter =
+    AdaptHiveMixedDeleteFilter<TrinoRow> mixedDeleteFilter =
         new KeyedDeleteFilter(
             keyedTableScanTask,
             tableSchema,
@@ -114,6 +114,6 @@ public class KeyedPageSourceProvider implements ConnectorPageSourceProvider {
         keyedTableHandle,
         dynamicFilter,
         typeManager,
-        arcticDeleteFilter);
+        mixedDeleteFilter);
   }
 }

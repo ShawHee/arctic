@@ -25,9 +25,10 @@ import org.apache.amoro.catalog.TableTestBase;
 import org.apache.amoro.flink.read.MixedIncrementalLoader;
 import org.apache.amoro.flink.read.hybrid.enumerator.ContinuousSplitPlanner;
 import org.apache.amoro.flink.read.hybrid.enumerator.MergeOnReadIncrementalPlanner;
-import org.apache.amoro.flink.read.source.FlinkArcticMORDataReader;
+import org.apache.amoro.flink.read.source.FlinkKeyedMORDataReader;
 import org.apache.amoro.flink.util.DataUtil;
 import org.apache.amoro.flink.write.FlinkTaskWriterBaseTest;
+import org.apache.amoro.shade.guava32.com.google.common.collect.Lists;
 import org.apache.amoro.table.KeyedTable;
 import org.apache.amoro.table.MixedTable;
 import org.apache.flink.configuration.Configuration;
@@ -41,7 +42,6 @@ import org.apache.iceberg.expressions.Expressions;
 import org.apache.iceberg.flink.data.RowDataUtil;
 import org.apache.iceberg.io.CloseableIterator;
 import org.apache.iceberg.io.TaskWriter;
-import org.apache.iceberg.relocated.com.google.common.collect.Lists;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -118,8 +118,8 @@ public class MixedIncrementalLoaderTest extends TableTestBase implements FlinkTa
         new MergeOnReadIncrementalPlanner(
             getTableLoader(getCatalogName(), getMetastoreUrl(), keyedTable));
 
-    FlinkArcticMORDataReader flinkArcticMORDataReader =
-        new FlinkArcticMORDataReader(
+    FlinkKeyedMORDataReader flinkKeyedMORDataReader =
+        new FlinkKeyedMORDataReader(
             keyedTable.io(),
             keyedTable.schema(),
             keyedTable.schema(),
@@ -132,7 +132,7 @@ public class MixedIncrementalLoaderTest extends TableTestBase implements FlinkTa
     MixedIncrementalLoader<RowData> incrementalLoader =
         new MixedIncrementalLoader<>(
             morPlanner,
-            flinkArcticMORDataReader,
+            flinkKeyedMORDataReader,
             new RowDataReaderFunction(
                 new Configuration(),
                 keyedTable.schema(),

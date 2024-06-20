@@ -21,14 +21,14 @@ package org.apache.amoro.flink.read.hybrid.split;
 import org.apache.amoro.data.DataTreeNode;
 import org.apache.amoro.data.PrimaryKeyedFile;
 import org.apache.amoro.scan.MixedFileScanTask;
+import org.apache.amoro.shade.guava32.com.google.common.base.MoreObjects;
+import org.apache.amoro.shade.guava32.com.google.common.base.Preconditions;
 import org.apache.amoro.utils.FileScanTaskUtil;
-import org.apache.iceberg.relocated.com.google.common.base.MoreObjects;
-import org.apache.iceberg.relocated.com.google.common.base.Preconditions;
 
 import java.util.Collection;
 
 /** A snapshot split generated during planning base table. */
-public class SnapshotSplit extends ArcticSplit {
+public class SnapshotSplit extends MixedFormatSplit {
   private static final long serialVersionUID = 1L;
   private final int taskIndex;
   private final Collection<MixedFileScanTask> insertScanTasks;
@@ -79,7 +79,7 @@ public class SnapshotSplit extends ArcticSplit {
   }
 
   @Override
-  public ArcticSplit copy() {
+  public MixedFormatSplit copy() {
     return new SnapshotSplit(insertScanTasks, taskIndex);
   }
 

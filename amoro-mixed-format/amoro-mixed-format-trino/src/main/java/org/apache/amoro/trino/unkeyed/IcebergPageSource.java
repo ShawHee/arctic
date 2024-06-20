@@ -21,11 +21,9 @@ package org.apache.amoro.trino.unkeyed;
 import static io.trino.plugin.base.util.Closables.closeAllSuppress;
 import static io.trino.plugin.iceberg.IcebergErrorCode.ICEBERG_BAD_DATA;
 import static java.util.Objects.requireNonNull;
-import static org.apache.iceberg.relocated.com.google.common.base.Preconditions.checkArgument;
-import static org.apache.iceberg.relocated.com.google.common.base.Throwables.throwIfInstanceOf;
+import static org.apache.amoro.shade.guava32.com.google.common.base.Preconditions.checkArgument;
+import static org.apache.amoro.shade.guava32.com.google.common.base.Throwables.throwIfInstanceOf;
 
-import org.apache.amoro.io.reader.DeleteFilter;
-import org.apache.amoro.trino.delete.TrinoRow;
 import io.trino.plugin.hive.ReaderProjectionsAdapter;
 import io.trino.plugin.iceberg.IcebergColumnHandle;
 import io.trino.plugin.iceberg.delete.IcebergPositionDeletePageSink;
@@ -33,6 +31,8 @@ import io.trino.spi.Page;
 import io.trino.spi.TrinoException;
 import io.trino.spi.connector.ConnectorPageSource;
 import io.trino.spi.type.Type;
+import org.apache.amoro.io.reader.DeleteFilter;
+import org.apache.amoro.trino.delete.TrinoRow;
 import org.apache.iceberg.io.CloseableIterable;
 
 import javax.annotation.Nullable;
@@ -45,8 +45,8 @@ import java.util.OptionalLong;
 import java.util.function.Supplier;
 
 /**
- * Iceberg original IcebergPageSource has some problems for arctic, such as iceberg version, table
- * type.
+ * Iceberg original IcebergPageSource has some problems for mixed-format table, such as iceberg
+ * version, table type.
  */
 public class IcebergPageSource implements ConnectorPageSource {
   private final Type[] columnTypes;

@@ -19,12 +19,12 @@
 package org.apache.amoro.optimizer.common;
 
 import org.apache.amoro.ErrorCodes;
-import org.apache.amoro.api.ArcticException;
+import org.apache.amoro.api.AmoroException;
 import org.apache.amoro.api.OptimizingService;
 import org.apache.amoro.client.OptimizingClientPools;
-import org.apache.iceberg.relocated.com.google.common.base.Preconditions;
-import org.apache.thrift.TApplicationException;
-import org.apache.thrift.TException;
+import org.apache.amoro.shade.guava32.com.google.common.base.Preconditions;
+import org.apache.amoro.shade.thrift.org.apache.thrift.TApplicationException;
+import org.apache.amoro.shade.thrift.org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,11 +66,11 @@ public class AbstractOptimizerOperator implements Serializable {
   }
 
   private boolean shouldRetryLater(Throwable t) {
-    if (t instanceof ArcticException) {
-      ArcticException arcticException = (ArcticException) t;
+    if (t instanceof AmoroException) {
+      AmoroException amoroException = (AmoroException) t;
       // Call ams again when got a persistence/undefined error
-      return ErrorCodes.PERSISTENCE_ERROR_CODE == arcticException.getErrorCode()
-          || ErrorCodes.UNDEFINED_ERROR_CODE == arcticException.getErrorCode();
+      return ErrorCodes.PERSISTENCE_ERROR_CODE == amoroException.getErrorCode()
+          || ErrorCodes.UNDEFINED_ERROR_CODE == amoroException.getErrorCode();
     } else {
       // Call ams again when got an unexpected error
       return true;
@@ -94,9 +94,8 @@ public class AbstractOptimizerOperator implements Serializable {
         try {
           return operation.call(OptimizingClientPools.getClient(config.getAmsUrl()), token);
         } catch (Throwable t) {
-          if (t instanceof ArcticException
-              && ErrorCodes.PLUGIN_RETRY_AUTH_ERROR_CODE
-                  == ((ArcticException) (t)).getErrorCode()) {
+          if (t instanceof AmoroException
+              && ErrorCodes.PLUGIN_RETRY_AUTH_ERROR_CODE == ((AmoroException) (t)).getErrorCode()) {
             // Reset the token when got a authorization error
             LOG.error(
                 "Got a authorization error while calling ams, reset token and wait for a new one",

@@ -30,6 +30,10 @@ import org.apache.amoro.hive.utils.HiveTableUtil;
 import org.apache.amoro.io.AuthenticatedHadoopFileIO;
 import org.apache.amoro.op.UpdatePartitionProperties;
 import org.apache.amoro.properties.HiveTableProperties;
+import org.apache.amoro.shade.guava32.com.google.common.base.Joiner;
+import org.apache.amoro.shade.guava32.com.google.common.collect.Lists;
+import org.apache.amoro.shade.guava32.com.google.common.collect.Maps;
+import org.apache.amoro.shade.guava32.com.google.common.collect.Sets;
 import org.apache.amoro.utils.TableFileUtil;
 import org.apache.amoro.utils.TablePropertyUtil;
 import org.apache.commons.collections.CollectionUtils;
@@ -49,10 +53,6 @@ import org.apache.iceberg.expressions.Expressions;
 import org.apache.iceberg.io.CloseableIterable;
 import org.apache.iceberg.io.FileIO;
 import org.apache.iceberg.io.OutputFile;
-import org.apache.iceberg.relocated.com.google.common.base.Joiner;
-import org.apache.iceberg.relocated.com.google.common.collect.Lists;
-import org.apache.iceberg.relocated.com.google.common.collect.Maps;
-import org.apache.iceberg.relocated.com.google.common.collect.Sets;
 import org.apache.iceberg.types.Types;
 import org.apache.iceberg.util.StructLikeMap;
 import org.apache.thrift.TException;
@@ -144,7 +144,7 @@ public abstract class UpdateHiveFiles<T extends SnapshotUpdate<T>> implements Sn
     commitTimestamp = (int) (System.currentTimeMillis() / 1000);
     applyDeleteExpr();
     if (syncDataToHive) {
-      HiveMetaSynchronizer.syncArcticDataToHive(table);
+      HiveMetaSynchronizer.syncMixedTableDataToHive(table);
     }
     List<DataFile> committedDataFiles =
         HiveCommitUtil.commitConsistentWriteFiles(this.addFiles, table.io(), table.spec());

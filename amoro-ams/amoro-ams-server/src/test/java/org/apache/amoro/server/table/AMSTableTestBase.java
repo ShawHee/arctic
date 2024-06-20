@@ -28,17 +28,17 @@ import org.apache.amoro.api.TableMeta;
 import org.apache.amoro.catalog.CatalogTestHelper;
 import org.apache.amoro.catalog.MixedTables;
 import org.apache.amoro.hive.TestHMS;
-import org.apache.amoro.hive.catalog.ArcticHiveCatalog;
+import org.apache.amoro.hive.catalog.MixedHiveCatalog;
 import org.apache.amoro.mixed.CatalogLoader;
 import org.apache.amoro.mixed.MixedFormatCatalog;
 import org.apache.amoro.properties.CatalogMetaProperties;
+import org.apache.amoro.shade.guava32.com.google.common.collect.Maps;
 import org.apache.amoro.table.MixedTable;
 import org.apache.amoro.utils.ConvertStructUtil;
 import org.apache.amoro.utils.MixedCatalogUtil;
 import org.apache.hadoop.hive.metastore.api.AlreadyExistsException;
 import org.apache.hadoop.hive.metastore.api.Database;
 import org.apache.iceberg.catalog.TableIdentifier;
-import org.apache.iceberg.relocated.com.google.common.collect.Maps;
 import org.apache.thrift.TException;
 import org.junit.After;
 import org.junit.Assert;
@@ -195,8 +195,8 @@ public class AMSTableTestBase extends TableServiceTestBase {
     // only create mixed hive table here !
     catalogMeta.putToCatalogProperties(
         CatalogMetaProperties.TABLE_FORMATS, TableFormat.MIXED_HIVE.name());
-    ArcticHiveCatalog catalog =
-        (ArcticHiveCatalog)
+    MixedHiveCatalog catalog =
+        (MixedHiveCatalog)
             CatalogLoader.createCatalog(
                 catalogMeta.getCatalogName(),
                 catalogMeta.getCatalogType(),
@@ -273,7 +273,7 @@ public class AMSTableTestBase extends TableServiceTestBase {
     return serverTableIdentifier;
   }
 
-  protected void validateArcticTable(MixedTable mixedTable) {
+  protected void validateMixedTable(MixedTable mixedTable) {
     Assert.assertEquals(catalogTestHelper().tableFormat(), mixedTable.format());
     Assert.assertEquals(TableTestHelper.TEST_TABLE_ID, mixedTable.id());
     Assert.assertEquals(tableTestHelper().tableSchema().asStruct(), mixedTable.schema().asStruct());

@@ -18,7 +18,7 @@
 
 package org.apache.iceberg.parquet;
 
-import org.apache.iceberg.relocated.com.google.common.collect.ImmutableList;
+import org.apache.amoro.shade.guava32.com.google.common.collect.ImmutableList;
 import org.apache.parquet.column.ColumnDescriptor;
 import org.apache.parquet.column.ColumnWriteStore;
 
@@ -31,9 +31,9 @@ public class AdaptHivePrimitiveWriter<T> implements ParquetValueWriter<T> {
   private final List<TripleWriter<?>> children;
 
   protected AdaptHivePrimitiveWriter(ColumnDescriptor desc) {
-    // Change For Arctic
+    // Change for mixed-hive table ⬇
     this.column = AdaptHiveColumnWriter.newWriter(desc);
-    // Change For Arctic
+    // Change for mixed-hive table ⬆
     this.children = ImmutableList.of(column);
   }
 

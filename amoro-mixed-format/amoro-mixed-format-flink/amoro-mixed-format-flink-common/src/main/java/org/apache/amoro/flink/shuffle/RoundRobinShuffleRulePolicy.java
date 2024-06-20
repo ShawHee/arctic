@@ -22,12 +22,12 @@ import static org.apache.flink.util.Preconditions.checkArgument;
 import static org.apache.flink.util.Preconditions.checkNotNull;
 
 import org.apache.amoro.data.DataTreeNode;
+import org.apache.amoro.shade.guava32.com.google.common.base.Preconditions;
+import org.apache.amoro.shade.guava32.com.google.common.collect.Sets;
 import org.apache.amoro.table.DistributionHashMode;
 import org.apache.flink.api.common.functions.Partitioner;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.table.data.RowData;
-import org.apache.iceberg.relocated.com.google.common.base.Preconditions;
-import org.apache.iceberg.relocated.com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -209,14 +209,14 @@ public class RoundRobinShuffleRulePolicy implements ShuffleRulePolicy<RowData, S
       checkArgument(
           numPartitions == this.downStreamOperatorParallelism,
           String.format(
-              "shuffle arctic record numPartition:%s is diff with writer parallelism:%s.",
+              "shuffle mixed-format record numPartition:%s is diff with writer parallelism:%s.",
               numPartitions, this.downStreamOperatorParallelism));
       Integer factorIndex = null;
       if (distributionHashMode.isSupportPrimaryKey()) {
         long pkHashCode = helper.hashKeyValue(row);
         factorIndex = (int) (pkHashCode % this.factor);
       }
-      // shuffle by arctic tree node and partition for partitioned table
+      // shuffle by mixed-format tree node and partition for partitioned table
       Integer partitionHashCode = null;
       if (distributionHashMode.isSupportPartition()) {
         partitionHashCode = helper.hashPartitionValue(row);

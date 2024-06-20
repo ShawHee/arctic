@@ -52,7 +52,7 @@ import io.javalin.http.Context;
 import org.apache.amoro.TableFormat;
 import org.apache.amoro.api.CatalogMeta;
 import org.apache.amoro.properties.CatalogMetaProperties;
-import org.apache.amoro.server.ArcticManagementConf;
+import org.apache.amoro.server.AmoroManagementConf;
 import org.apache.amoro.server.catalog.InternalCatalog;
 import org.apache.amoro.server.catalog.ServerCatalog;
 import org.apache.amoro.server.dashboard.PlatformFileManager;
@@ -63,6 +63,12 @@ import org.apache.amoro.server.dashboard.response.OkResponse;
 import org.apache.amoro.server.dashboard.utils.DesensitizationUtil;
 import org.apache.amoro.server.dashboard.utils.PropertiesUtil;
 import org.apache.amoro.server.table.TableService;
+import org.apache.amoro.shade.guava32.com.google.common.base.Objects;
+import org.apache.amoro.shade.guava32.com.google.common.base.Preconditions;
+import org.apache.amoro.shade.guava32.com.google.common.collect.ImmutableMap;
+import org.apache.amoro.shade.guava32.com.google.common.collect.Lists;
+import org.apache.amoro.shade.guava32.com.google.common.collect.Maps;
+import org.apache.amoro.shade.guava32.com.google.common.collect.Sets;
 import org.apache.amoro.table.TableProperties;
 import org.apache.amoro.utils.MixedCatalogUtil;
 import org.apache.commons.lang.StringUtils;
@@ -70,12 +76,6 @@ import org.apache.iceberg.CatalogProperties;
 import org.apache.iceberg.aws.AwsClientProperties;
 import org.apache.iceberg.aws.glue.GlueCatalog;
 import org.apache.iceberg.aws.s3.S3FileIOProperties;
-import org.apache.iceberg.relocated.com.google.common.base.Objects;
-import org.apache.iceberg.relocated.com.google.common.base.Preconditions;
-import org.apache.iceberg.relocated.com.google.common.collect.ImmutableMap;
-import org.apache.iceberg.relocated.com.google.common.collect.Lists;
-import org.apache.iceberg.relocated.com.google.common.collect.Maps;
-import org.apache.iceberg.relocated.com.google.common.collect.Sets;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -110,6 +110,8 @@ public class CatalogController {
     VALIDATE_CATALOGS = Sets.newHashSet();
     VALIDATE_CATALOGS.add(
         CatalogDescriptor.of(CATALOG_TYPE_AMS, STORAGE_CONFIGS_VALUE_TYPE_S3, ICEBERG));
+    VALIDATE_CATALOGS.add(
+        CatalogDescriptor.of(CATALOG_TYPE_AMS, STORAGE_CONFIGS_VALUE_TYPE_S3, MIXED_ICEBERG));
     VALIDATE_CATALOGS.add(
         CatalogDescriptor.of(CATALOG_TYPE_AMS, STORAGE_CONFIGS_VALUE_TYPE_HADOOP, ICEBERG));
     VALIDATE_CATALOGS.add(
@@ -188,7 +190,7 @@ public class CatalogController {
     List<ImmutableMap<String, String>> catalogTypes = new ArrayList<>();
     String valueKey = "value";
     String displayKey = "display";
-    catalogTypes.add(ImmutableMap.of(valueKey, CATALOG_TYPE_AMS, displayKey, "Arctic Metastore"));
+    catalogTypes.add(ImmutableMap.of(valueKey, CATALOG_TYPE_AMS, displayKey, "Amoro Metastore"));
     catalogTypes.add(ImmutableMap.of(valueKey, CATALOG_TYPE_HIVE, displayKey, "Hive Metastore"));
     catalogTypes.add(ImmutableMap.of(valueKey, CATALOG_TYPE_HADOOP, displayKey, "Hadoop"));
     catalogTypes.add(ImmutableMap.of(valueKey, CATALOG_TYPE_GLUE, displayKey, "Glue"));
@@ -308,7 +310,7 @@ public class CatalogController {
       storageConfig.put(
           STORAGE_CONFIGS_KEY_CORE_SITE,
           new ConfigFileItem(
-              ArcticManagementConf.CATALOG_CORE_SITE + ".xml",
+              AmoroManagementConf.CATALOG_CORE_SITE + ".xml",
               constructCatalogConfigFileUrl(
                   catalogName,
                   CONFIG_TYPE_STORAGE,
@@ -317,7 +319,7 @@ public class CatalogController {
       storageConfig.put(
           STORAGE_CONFIGS_KEY_HDFS_SITE,
           new ConfigFileItem(
-              ArcticManagementConf.CATALOG_HDFS_SITE + ".xml",
+              AmoroManagementConf.CATALOG_HDFS_SITE + ".xml",
               constructCatalogConfigFileUrl(
                   catalogName,
                   CONFIG_TYPE_STORAGE,
@@ -326,7 +328,7 @@ public class CatalogController {
       storageConfig.put(
           STORAGE_CONFIGS_KEY_HIVE_SITE,
           new ConfigFileItem(
-              ArcticManagementConf.CATALOG_HIVE_SITE + ".xml",
+              AmoroManagementConf.CATALOG_HIVE_SITE + ".xml",
               constructCatalogConfigFileUrl(
                   catalogName,
                   CONFIG_TYPE_STORAGE,

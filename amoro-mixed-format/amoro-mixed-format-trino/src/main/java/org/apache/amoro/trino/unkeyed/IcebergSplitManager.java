@@ -22,8 +22,6 @@ import static io.trino.plugin.iceberg.IcebergSessionProperties.getDynamicFilteri
 import static io.trino.plugin.iceberg.IcebergSessionProperties.getMinimumAssignedSplitWeight;
 import static java.util.Objects.requireNonNull;
 
-import org.apache.amoro.trino.ArcticTransactionManager;
-import org.apache.amoro.trino.TableNameResolve;
 import io.airlift.units.Duration;
 import io.trino.filesystem.TrinoFileSystemFactory;
 import io.trino.plugin.base.classloader.ClassLoaderSafeConnectorSplitSource;
@@ -37,25 +35,27 @@ import io.trino.spi.connector.Constraint;
 import io.trino.spi.connector.DynamicFilter;
 import io.trino.spi.connector.FixedSplitSource;
 import io.trino.spi.type.TypeManager;
+import org.apache.amoro.shade.guava32.com.google.common.collect.ImmutableList;
+import org.apache.amoro.trino.MixedFormatTransactionManager;
+import org.apache.amoro.trino.TableNameResolve;
 import org.apache.iceberg.Table;
 import org.apache.iceberg.TableScan;
-import org.apache.iceberg.relocated.com.google.common.collect.ImmutableList;
 
 import javax.inject.Inject;
 
 /**
- * Iceberg original IcebergSplitManager has some problems for arctic, such as iceberg version, table
- * type.
+ * Iceberg original IcebergSplitManager has some problems for mixed-format table, such as iceberg
+ * version, table type.
  */
 public class IcebergSplitManager implements ConnectorSplitManager {
 
-  private final ArcticTransactionManager transactionManager;
+  private final MixedFormatTransactionManager transactionManager;
   private final TypeManager typeManager;
   private final TrinoFileSystemFactory fileSystemFactory;
 
   @Inject
   public IcebergSplitManager(
-      ArcticTransactionManager transactionManager,
+      MixedFormatTransactionManager transactionManager,
       TypeManager typeManager,
       TrinoFileSystemFactory fileSystemFactory) {
     this.transactionManager = requireNonNull(transactionManager, "transactionManager is null");
@@ -82,7 +82,7 @@ public class IcebergSplitManager implements ConnectorSplitManager {
     Table icebergTable =
         transactionManager
             .get(transaction)
-            .getArcticTable(table.getSchemaTableName())
+            .getMixedTable(table.getSchemaTableName())
             .asUnkeyedTable();
     Duration dynamicFilteringWaitTimeout = getDynamicFilteringWaitTimeout(session);
 
